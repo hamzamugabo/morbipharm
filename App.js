@@ -1,112 +1,56 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow strict-local
- */
+import * as React from 'react';
+import { Text, View } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 
-import React from 'react';
-import type {Node} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import Login from "./src/auth/Login";
+// import Logout from "./src/auth/Logout";
+import Register from "./src/auth/Register";
+import Home from './src/Home';
+// import Land from './src/Land';
+// import Building from './src/Building';
+// import Settings from './src/Settings';
+import AddProduct from './src/AddProduct';
+// import MakePayments from './src/MakePayment';
+// import SignOut from './src/auth/SignOut';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
 
-const Section = ({children, title}): Node => {
-  const isDarkMode = useColorScheme() === 'dark';
+
+
+const Stack = createStackNavigator();
+
+function MyStack() {
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
+    <Stack.Navigator
+    initialRouteName="Home"
+    screenOptions={{
+      headerShown: false
+    }}
+    >
+      <Stack.Screen name="Login" component={Login} />
+      <Stack.Screen name="AddProduct" component={AddProduct} />
+     <Stack.Screen name="Home" component={Home} />
+       {/* <Stack.Screen name="Land" component={Land} />
+      <Stack.Screen name="Building" component={Building} />
+      <Stack.Screen name="Settings" component={Settings} />
+      <Stack.Screen name="SignUp" component={Logout} />
+      <Stack.Screen name="AddBuilding" component={Building} />
+      <Stack.Screen name="Logout" component={Logout} /> */}
+      <Stack.Screen name="Register" component={Register} />
+      {/* <Stack.Screen name="MakePayments" component={MakePayments} />
+      <Stack.Screen name="SignOut" component={SignOut} /> */}
+      {/* <Stack.Screen name="SignOut" component={SignOut} />
+      <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+      <Stack.Screen name="Edit" component={Edit} /> */}
+    </Stack.Navigator>
   );
-};
-
-const App: () => Node = () => {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
+}
+export default function App() {
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.js</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    <NavigationContainer>
+      {/* <MyTabs /> */}
+      <MyStack />
+    </NavigationContainer>
   );
-};
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
-
-export default App;
+}
