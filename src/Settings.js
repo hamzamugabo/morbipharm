@@ -3,9 +3,9 @@ import { Text, View,StyleSheet, TouchableOpacity,Image } from 'react-native';
 import Card from "./Card";
 import AsyncStorage from '@react-native-community/async-storage';
 
-import auth from '@react-native-firebase/auth';
-import database from '@react-native-firebase/database';
-// import SignOut from './auth/SignOut';
+// import auth from '@react-native-firebase/auth';
+// import database from '@react-native-firebase/database';
+// // import SignOut from './auth/SignOut';
 export default class Settings extends React.Component{
 constructor(){
   super();
@@ -13,45 +13,25 @@ constructor(){
     user:false,
     user_id:'',
     data2:'',
+    setData2:'',
     email:'',
     currentUser:null
   }
 }
- 
+getData_ = async () => {
+  try {
+    const jsonValue = await AsyncStorage.getItem('@storage_Key');
+    // return jsonValue != null ? JSON.parse(jsonValue) : null;
+    this.setState({setData2:JSON.parse(jsonValue)});
+    // JSON.parse(jsonValue)?null:this.props.navigation.navigate('Login');
+    // console.log(data2);
+  } catch (e) {
+    // error reading value
+    console.log(e);
+  }
+};
 componentDidMount() { 
-  auth().onAuthStateChanged((user) => {
-    if (user) {
-      const {currentUser} = auth();
-
-    this.setState({currentUser});
-    this.state.email = currentUser && currentUser.email;
-
-    var user = currentUser && currentUser.email;
-      var newString2 = user.replace(/[^0-9a-z]/gi, '-');
-
-      database()
-          .ref('users/' + newString2 + '/admin')
-          .once('value', (snapshot) => {
-            if (snapshot.exists()) {
-              
-              const admin = snapshot.val();
-              if (admin == 'admin') {
-                // this.props.navigation.navigate('AdminHome');
-     this.setState({user:true})
-              // alert('admin qual');
-                
-                // alert('Posting Entity');
-              }else{alert('admin not qual');} 
-            } else {
-              alert("Not Admin");
-             
-            }
-          });
-      // this.props.navigation.navigate('Login');
-
-
-    } 
-  });
+  this.getData_();
 };
 // UNSAFE_componentWillMount () {
 //   this.getData_();
@@ -87,22 +67,14 @@ componentDidMount() {
         </View>
        <View  style={[styles.buttonsContainer, {margin:15}]}>
         <TouchableOpacity
-        onPress={()=> this.state.user?this.props.navigation.navigate('AddLand',{ page: 'AddLand' }):alert('Login First')}
+        onPress={()=> this.state.setData2?this.props.navigation.navigate('AddProduct',{ page: 'AddProduct' }):alert('Login First')}
         >
 
         <Card>
-        <Text>Add Land</Text>
+        <Text>Add Item</Text>
            </Card>
         </TouchableOpacity>
-        <TouchableOpacity
-        onPress={()=> this.state.user?this.props.navigation.navigate('AddBuilding',{ page: 'AddBuilding' }):alert('Login First')}
         
-        >
-
-<Card>
-<Text>Add Building</Text>
-   </Card>
-</TouchableOpacity>
        </View>
 
        <View  style={[styles.buttonsContainer, {margin:15}]}>

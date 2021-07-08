@@ -56,6 +56,8 @@ export default class Register extends Component {
 
 
 handleSignUp2 = () => {
+  this.setState({ loading: true, disabled: false });
+
                     if(this.state.fname  != ''){
                       if(this.state.lname  != ''){
                       if(this.state.email  != ''){
@@ -64,7 +66,7 @@ handleSignUp2 = () => {
                             // if(this.state.confirm_password  == this.state.password){
                                 // if (this.state.confirm_agreement == true) {
                                   fetch(
-                                    'http://ubuntusx.com/server_files/user_registration1.php',
+                                    'http://ubuntusx.com/mobipharm/user_registration1.php',
             
                                     // "http://e-soil-databank.paatsoilclinic.com/sever/register.php",/
                                     {
@@ -91,19 +93,21 @@ handleSignUp2 = () => {
                                         //Then open Profile activity and send user email to profile activity.
                                         Alert.alert('Registered successfully');
             
-                                        navigation.navigate('Login');
+                                        this.props.navigation.navigate('Login');
+                                        this.setState({ loading: false, disabled: false });
             
                                         // return navigation.navigate('Login');
                                         // Alert.alert('data matched');
                                       } else {
+                                        console.log(responseJson);
                                         Alert.alert(responseJson);
                                       }
             
-                                      // this.setState({ loading: false, disabled: false });
+                                      this.setState({ loading: false, disabled: false });
                                     })
                                     .catch(error => {
                                       console.error(error);
-                                      // this.setState({ loading: false, disabled: false });
+                                      this.setState({ loading: false, disabled: false });
                                     });
        
     // }else{alert('agree to terms first')}
@@ -116,7 +120,7 @@ handleSignUp2 = () => {
           };
 
           handle = () => {
-            this.handleSignUp();
+            // this.handleSignUp();
             this.handleSignUp2();
           }
 
@@ -149,7 +153,7 @@ handleSignUp2 = () => {
                       <View style={styles.inputContainer}>
                         <TextInput
                           underlineColorAndroid="transparent"
-                          placeholder="username"
+                          placeholder="First Name"
                           style={styles.inputs}
                           autoCapitalize="none"
                           onChangeText={(fname) => this.setState({fname})}
@@ -160,7 +164,7 @@ handleSignUp2 = () => {
                       <View style={styles.inputContainer}>
                         <TextInput
                           underlineColorAndroid="transparent"
-                          placeholder="username"
+                          placeholder="Last Name"
                           style={styles.inputs}
                           autoCapitalize="none"
                           onChangeText={(lname) => this.setState({lname})}
@@ -199,7 +203,7 @@ handleSignUp2 = () => {
                           secureTextEntry={true}
                         />
                       </View>
-                      <View style={styles.inputContainer}>
+                      {/* <View style={styles.inputContainer}>
                         <TextInput
                           underlineColorAndroid="transparent"
                           placeholder="Confirm password"
@@ -210,7 +214,7 @@ handleSignUp2 = () => {
                           value={this.state.confirm_password}
                           secureTextEntry={true}
                         />
-                      </View>
+                      </View> */}
         
                       {/* <View style={[styles.buttonsContainer, {marginBottom: 5}]}>
                         <CheckBox

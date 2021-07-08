@@ -10,10 +10,11 @@ import Register from "./src/auth/Register";
 import Home from './src/Home';
 // import Land from './src/Land';
 // import Building from './src/Building';
-// import Settings from './src/Settings';
+import Settings from './src/Settings';
 import AddProduct from './src/AddProduct';
 // import MakePayments from './src/MakePayment';
-// import SignOut from './src/auth/SignOut';
+import SignOut from './src/auth/SignOut';
+import Main from './src/Main';
 
 
 
@@ -30,10 +31,13 @@ function MyStack() {
     >
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="AddProduct" component={AddProduct} />
+      <Stack.Screen name="Settings" component={Settings} />
      <Stack.Screen name="Home" component={Home} />
+    <Stack.Screen name="SignOut" component={SignOut} /> 
+    <Stack.Screen name="Main" component={Main} /> 
+
        {/* <Stack.Screen name="Land" component={Land} />
       <Stack.Screen name="Building" component={Building} />
-      <Stack.Screen name="Settings" component={Settings} />
       <Stack.Screen name="SignUp" component={Logout} />
       <Stack.Screen name="AddBuilding" component={Building} />
       <Stack.Screen name="Logout" component={Logout} /> */}

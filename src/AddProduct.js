@@ -1,13 +1,14 @@
 import * as React from 'react';
 // import { Text, View,TouchableOpacity,Image,StyleSheet,ScrollView,TextInput } from 'react-native';
 import { Text, View, TouchableOpacity,Image,StyleSheet,ScrollView,TextInput,PixelRatio,ActivityIndicator } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
 
 import Dialog, { DialogFooter, DialogButton, DialogContent } from 'react-native-popup-dialog';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import CheckBox from '@react-native-community/checkbox';
 // import storage from '@react-native-firebase/storage';
 // import ImagePicker from 'react-native-image-picker';
-
+import RNFetchBlob from 'rn-fetch-blob';
 // import auth from '@react-native-firebase/auth';
 // import database from '@react-native-firebase/database';
 export default class AddProduct extends React.Component{
@@ -23,7 +24,7 @@ constructor(props){
         owner:'',
         size:'',
         block:'',
-        plot:'',
+        plot:'',data:null,
         photo:[],
         loading:false,
     value: '',
@@ -39,6 +40,22 @@ constructor(props){
     }
 }
 
+ getData_ = async () => {
+  try {
+    const jsonValue = await AsyncStorage.getItem('@storage_Key');
+    // return jsonValue != null ? JSON.parse(jsonValue) : null;
+    // setData2(JSON.parse(jsonValue));
+    JSON.parse(jsonValue)?null:this.props.navigation.navigate('Login');
+    // console.log(data2);
+  } catch (e) {
+    // error reading value
+    console.log(e);
+  }
+};
+
+componentDidMount(){
+this.getData_();
+}
 takephoto=()=> {
 // this.setState({option:launchCamera});
 
@@ -72,7 +89,7 @@ launchCamera(options, (response) => { // Use launchImageLibrary to open image ga
     const source = { uri: this.state.uri_ };
     this.setState({
       stimage: source,
-      // data: response.data
+      data: response.assets
     });
   }
 });
@@ -107,16 +124,42 @@ launchImageLibrary(options, (response) => { // Use launchImageLibrary to open im
       this.setState({filename:data.fileName});
       this.setState({uri_:data.uri});
      });
+
+     console.log(response);
+    //  this.setState({
+ 
+    //   ImageSource: source,
+    //   data: response.data
+
+    // });
     const source = { uri: this.state.uri_ };
     this.setState({
       stimage: source,
-      // data: response.data
+      data: response.assets
     });
   }
 });
 this.setState({visible:false});
 
 }
+uploadImageToServer = () => {
+ 
+  fetch( 'http://ubuntusx.com/mobipharm/test2.php', {
+    method:'POST',
+    'Content-Type': 'multipart/form-data',
+  }, [
+      { name: 'image', filename: 'image.png', type: 'image/png', data:this.state.stimage },
+      { name: 'price', data: 100 }
+    ]).then((resp) => {
+
+    console.log(resp);
+    }).catch((err) => {
+    console.log(err);
+    // ...
+    })
+
+}
+
 // uploadImage = async () => {
 // // this.saveData();
 // const {uri} = this.state.stimage;
@@ -165,58 +208,75 @@ this.setState({visible:false});
 // };
 saveData = () => {
 this.setState({loading: true, disabled: true});
-this.uploadImage();
-const {currentUser} = auth();
+// this.uploadImage();
+// const {currentUser} = auth();
 
 
-if (this.state.size != '') {
-  if (this.state.owner != '') {
-    if (this.state.number != '') {
-      if (this.state.block != '') {
-        if (this.state.plot != '') {
+if (this.state.product != '') {
+  if (this.state.price != '') {
+    if (this.state.quantity != '') {
+      if (this.state.category != '') {
             this.setState({loading: true, disabled: true}, () => {
-              database()
-                .ref('Land/')
-                .push({
-                  size: this.state.size,
-                  owner: this.state.owner,
-                  number: this.state.number,
-                  block: this.state.block,
-                  plot: this.state.plot,
-                  photo: this.state.filename,
-                  description: this.state.discription,
-                })
+              fetch(
+                'http://ubuntusx.com/mobipharm/add_item.php',
 
-                .then(() => {
-                  this.setState({loading: false, disabled: false});
-                  alert('Land/Plot Added Successfully');
-                  return this.props.navigation.navigate(
-                    'AddLand',
-                  );
+                // "http://e-soil-databank.paatsoilclinic.com/sever/register.php",/
+                {
+                  method: 'POST',
+                  headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                    product: this.state.product,
+                    price: this.state.price,
+                    quantity: this.state.quantity,
+                    category: this.state.category,
+
+                    discription: this.state.discription,
+                    image: this.state.stimage,
+                   
+                  }),
+                },
+              )
+                .then(response => response.json())
+                .then(responseJson => {
+                  // If server response message same as Data Matched
+                  if (responseJson === 'Added suceessfully!') {
+                    //Then open Profile activity and send user email to profile activity.
+                    alert('Added successfully');
+
+                    // this.props.navigation.navigate('Login');
+                    this.setState({ loading: false, disabled: false });
+
+                    // return navigation.navigate('Login');
+                    // Alert.alert('data matched');
+                  } else {
+                    console.log(responseJson);
+                    alert(responseJson);
+                  }
+
+                  this.setState({ loading: false, disabled: false });
                 })
-                .catch((error) => {
-                  // this.state.errorMessage ? this.handleSignUp()  : this.handle()
-                  this.setState({loading: false, disabled: false});
+                .catch(error => {
+                  console.error(error);
+                  this.setState({ loading: false, disabled: false });
                 });
-
               this.setState({loading: false, disabled: false});
             });
          
           
-        } else {
-          alert('Enter Title Plot');
-        }
-      } else {
-        alert('Enter Title Block');
-      }
+          } else {
+            alert('Enter Category');
+          }
     } else {
-      alert('Enter Contact Number');
+      alert('Enter quantity');
     }
   } else {
-    alert('Enter Owner Name');
+    alert('Enter Item Price');
   }
 } else {
-  alert(' Enter Plot/Land Size');
+  alert(' Enter Item Name');
 }
 };
 hideModal=()=>{
@@ -287,6 +347,12 @@ this.setState({visible:true});
               )}
             </View>
           </TouchableOpacity>
+
+           <TouchableOpacity onPress={this.uploadImageToServer} activeOpacity={0.6} style={styles.button} >
+ 
+          <Text style={styles.TextStyle}> UPLOAD IMAGE TO SERVER </Text>
+ 
+        </TouchableOpacity>
             </View>
             {/* <View style={styles.inputContainer}>
               <TextInput
@@ -332,15 +398,15 @@ this.setState({visible:true});
                 value={this.state.quantity}
               />
             </View>
-            {/* <View style={styles.inputContainerRow}>
+            <View style={styles.inputContainerRow}>
               <TextInput
                 underlineColorAndroid="transparent"
-                placeholder="Title Plot"
+                placeholder="Category"
                 style={styles.inputs}
-                onChangeText={(plot) => this.setState({plot})}
-                value={this.state.plot}
+                onChangeText={(category) => this.setState({category})}
+                value={this.state.category}
               />
-            </View> */}
+            </View>
             </View>
            
             <View style={[styles.inputContainer, {height:70}]}>

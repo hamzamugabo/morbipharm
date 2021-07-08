@@ -1,23 +1,13 @@
-import React from 'react';
+import React, {useEffect} from "react";
+import AsyncStorage from '@react-native-community/async-storage';
 import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  ActivityIndicator,
-  Platform,
-  Alert,
-  TouchableWithoutFeedback,
-  Keyboard,
-  ScrollView,
-} from 'react-native';
-import auth from '@react-native-firebase/auth';
-import database from '@react-native-firebase/database';
-// import auth from '@react-native-firebase/auth';
-// import database from '@react-native-firebase/database';
-// import firestore from '@react-native-firebase/firestore';
-
+    SafeAreaView,
+    StyleSheet,
+    View,
+    Text,
+    Button,
+    ActivityIndicator,
+  } from 'react-native';
 
 export default class SignOut extends React.Component {
   static navigationOptions = ({navigation}) => {
@@ -28,21 +18,17 @@ export default class SignOut extends React.Component {
         </View>
       ),
          }}
+         getData = async () => {
+          try {
+              await AsyncStorage.removeItem('@storage_Key');
+              return true;
+          }
+          catch(exception) {
+              return false;
+          }
+        };
   componentDidMount() {
-    
-    // auth().onAuthStateChanged((user) => {
-    //   if (!user) {
-       
-    //     this.props.navigation.navigate('Home');
-    //   } else{
-        auth()
-        .signOut()
-        .then(() => {
-          console.log('User signed out!');
-          return this.props.navigation.navigate('Home');
-        });
-      // }
-    // });
+    this.getData();
   
   }
   render(){

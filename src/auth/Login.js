@@ -13,6 +13,7 @@ import {
     TouchableOpacity,
   
 } from "react-native";
+import AsyncStorage from '@react-native-community/async-storage';
 
 // import auth from '@react-native-firebase/auth';
 // import database from '@react-native-firebase/database';
@@ -55,8 +56,8 @@ alert(e);
       if (this.state.password != '') {
         this.setState({loading:true});
           fetch(
-            'http://localhost/react_projects/e_SoilBank/server/login.php',
-            // 'http://ubuntusx.com/server_files/User_Login.php',
+            // 'http://localhost/react_projects/e_SoilBank/server/login.php',
+            'http://ubuntusx.com/mobipharm/User_Login.php',
             {
               method: 'POST',
               headers: {
@@ -181,7 +182,7 @@ alert(e);
     
               <TouchableHighlight
                 style={[styles.buttonContainer, styles.loginButton]}
-                onPress={this.handleLogin}>
+                onPress={this.UserLoginFunction}>
                 <Text style={styles.loginText}>Login</Text>
               </TouchableHighlight>
     

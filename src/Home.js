@@ -26,21 +26,6 @@ export default class Home extends React.Component{
       setbuilding:false
     };
   }
-
-//    getSampleImage = async () => {
-//     const imageRefs = await storage().ref().child('Building/').listAll();
-//     const urls = await Promise.all(imageRefs.items.map((ref) => ref.getDownloadURL()));
-//     this.setState({photos:urls});
-//     console.log(this.state.photos);
-
-// }
-// getSampleImage2 = async () => {
-//   const imageRefs = await storage().ref().child('Land/').listAll();
-//   const urls = await Promise.all(imageRefs.items.map((ref) => ref.getDownloadURL()));
-//   this.setState({photos2:urls});
-//   console.log(this.state.photos2);
-
-// }
   componentDidMount(){
     this.setState({loading:true});
     fetch(
@@ -197,7 +182,7 @@ source={{uri: `${photo_url}`}}
   <Text style={{fontSize:25}}>Mobipharm</Text>
 </TouchableHighlight>
 <TouchableOpacity
-onPress={() => this.props.navigation.navigate('AddProduct')}
+onPress={() => this.props.navigation.navigate('Settings')}
 >
   <Image source={require('./images/settings.png')}
    style = {{ width: 30, height: 30 }}
