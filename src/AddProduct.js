@@ -34,6 +34,7 @@ constructor(props){
     visible:false,
     filename:'',
     uri_:null,
+    setSingleFile:null,
     currentUser: null,
     discription:'',
     sttransferred: 0,
@@ -142,70 +143,78 @@ launchImageLibrary(options, (response) => { // Use launchImageLibrary to open im
 this.setState({visible:false});
 
 }
-uploadImageToServer = () => {
- 
-  fetch( 'http://ubuntusx.com/mobipharm/test2.php', {
-    method:'POST',
-    'Content-Type': 'multipart/form-data',
-  }, [
-      { name: 'image', filename: 'image.png', type: 'image/png', data:this.state.stimage },
-      { name: 'price', data: 100 }
-    ]).then((resp) => {
+ uploadImage = async () => {
+  // Check if any file is selected or not
+  if (this.state.setSingleFile != null) {
+    // If file selected then create FormData
+    const fileToUpload = this.state.setSingleFile;
+    const data = new FormData();
+    data.append('name', 'Image Upload');
+    data.append('file_attachment', fileToUpload);
+    // data.append('price', 1000);
 
-    console.log(resp);
-    }).catch((err) => {
-    console.log(err);
-    // ...
-    })
+    console.log(data);
 
-}
+    // data.append('item', 'covidex');
+    // data.append('file_attachment', fileToUpload);
+    // Please change file upload URL
+    let res = await fetch(
+      'http://ubuntusx.com/mobipharm/test.php',
+      {
+        method: 'post',
+        body: data,
+        headers: {
+          'Content-Type': 'multipart/form-data; ',
+        },
+      }
+    );
+    let responseJson = await res.json();
+    if (responseJson.status == 1) {
+      
 
-// uploadImage = async () => {
-// // this.saveData();
-// const {uri} = this.state.stimage;
+this.saveData();
 
-// // console.log('uri= '+uri)
 
-// console.log('stimage= ' + this.state.stimage);
-// const filename = uri;
+    }else{console.log(responseJson)}
+  } else {
+    // If no file selected the show alert
+    alert('Please Select File first');
+  }
+};
 
-// // alert(filename)
-// // console.log(filename);
-// const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri;
-// this.setState({sttransferred: 0});
-// this.setState({stuploading: true});
-// // sttransferred(0);
-// const task = storage()
-//   .ref('Land').child(this.state.filename)
-//   .putFile(uri);
-// // set progress state
-// task.on('state_changed', (snapshot) => {
-//   this.setState({
-//     sttransferred:
-//       Math.round(snapshot.bytesTransferred / snapshot.totalBytes) * 10000,
-//   });
-// });
-// try {
-//   await task;
-// } catch (e) {
-//   console.error(e);
-//   alert(e);
-// }
+ selectFile = async () => {
+  // Opening Document Picker to select one file
+  try {
+    const res = await DocumentPicker.pick({
+      // Provide which type of file you want user to pick
+      type: [DocumentPicker.types.allFiles],
+      // There can me more options as well
+      // DocumentPicker.types.allFiles
+      // DocumentPicker.types.images
+      // DocumentPicker.types.plainText
+      // DocumentPicker.types.audio
+      // DocumentPicker.types.pdf
+    });
+    // Printing the log realted to the file
+    console.log('res : ' + JSON.stringify(res));
+    // Setting the state to show single file attributes
+    // setSingleFile(res);
+    this.setState({setSingleFile:res})
+  } catch (err) {
+    // setSingleFile(null);
+    this.setState({setSingleFile:null})
 
-// this.setState({stuploading: false});
-// // alert('Photo uploaded!', 'Your photo has been uploaded');
-// const ref = storage().ref(filename);
-
-// ref
-//   .getDownloadURL()
-//   .then((url) => {
-//     this.setState({photos: url});
-//   })
-//   .catch((e) => console.log('getting downloadURL of image error => ', e));
-// // // alert(this.state.url)
-
-// // alert(this.state.url)
-// };
+    // Handling any exception (If any)
+    if (DocumentPicker.isCancel(err)) {
+      // If user canceled the document selection
+      alert('Canceled');
+    } else {
+      // For Unknown Error
+      alert('Unknown Error: ' + JSON.stringify(err));
+      throw err;
+    }
+  }
+};
 saveData = () => {
 this.setState({loading: true, disabled: true});
 // this.uploadImage();
@@ -333,7 +342,7 @@ this.setState({visible:true});
         <ScrollView>
           <View style={{marginBottom: 30}}>
           <View style={{alignItems:'center'}}>
-            <TouchableOpacity onPress={this.showModal}
+            <TouchableOpacity onPress={this.selectFile}
           style={{justifyContent:'center'}}
           >
             <View style={styles.ImageContainer}>
@@ -348,11 +357,11 @@ this.setState({visible:true});
             </View>
           </TouchableOpacity>
 
-           <TouchableOpacity onPress={this.uploadImageToServer} activeOpacity={0.6} style={styles.button} >
+           {/* <TouchableOpacity onPress={this.uploadImageToServer} activeOpacity={0.6} style={styles.button} >
  
           <Text style={styles.TextStyle}> UPLOAD IMAGE TO SERVER </Text>
  
-        </TouchableOpacity>
+        </TouchableOpacity> */}
             </View>
             {/* <View style={styles.inputContainer}>
               <TextInput
