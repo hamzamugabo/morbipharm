@@ -315,21 +315,21 @@ export default class Home extends React.Component {
               // ListHeaderComponent={this.header}
             /> */}
 
-        <Dialog visible={this.state.visible}
-        
-        footer={
-          <DialogFooter>
-            <DialogButton
-              text="CANCEL"
-              onPress={() =>this.setState({visible:false})}
-            />
-            <DialogButton
-              text="OK"
-              onPress={() =>this.setState({visible:false})}
-            />
-          </DialogFooter>
-        }
-        >
+        <Dialog
+          visible={this.state.visible}
+          height={500}
+          footer={
+            <DialogFooter>
+              <DialogButton
+                text="CANCEL"
+                onPress={() => this.setState({visible: false})}
+              />
+              <DialogButton
+                text="OK"
+                onPress={() => this.setState({visible: false})}
+              />
+            </DialogFooter>
+          }>
           <DialogContent>
             <View
               style={{
@@ -341,10 +341,38 @@ export default class Home extends React.Component {
                 this.state.data
                   .filter(item => item.id == product_id)
                   .map((product, index) => (
-                    <View key={index}>
-                      <Text>{product.item}</Text>
-                      <Text>{product.category}</Text>
-                      <Text>{product.price}</Text>
+                    <View key={index} style={{marginBottom:30}}>
+                      <View style={styles.buttonsContainer}>
+                        <View>
+                          <Image
+                            style={{width: 70, height: 80, borderRadius: 50}}
+                            source={{
+                              uri: `http://ubuntusx.com/mobipharm/uploads/${product.image}`,
+                            }}
+                          />
+                        </View>
+                        <View>
+                          <Text>{product.item}</Text>
+                          <Text>{product.category}</Text>
+                          <Text>{product.price}</Text>
+                        </View>
+                      </View>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'space-around',
+                        }}>
+                        <TouchableOpacity style={styles.smaillbuttons}>
+                          <Text style={{fontSize: 20, color: '#fff'}}>+</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.smaillbuttons}>
+                          <Text style={{fontSize: 20, color: '#fff'}}>-</Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity style={[styles.smaillbuttons,{width:60,backgroundColor:'transparent'}]}>
+                          <Text style={{ color: '#ff751a'}}>Removee</Text>
+                        </TouchableOpacity>
+                      </View>
                     </View>
                   )),
               )}
@@ -356,6 +384,18 @@ export default class Home extends React.Component {
   }
 }
 const styles = StyleSheet.create({
+  smaillbuttons: {
+    height: 45,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+    // width: 250,
+    backgroundColor: '#ff751a',
+    width: 30,
+    height: 20,
+    borderRadius: 10,
+  },
   buttonsContainer: {
     flexDirection: 'row',
     width: '90%',
