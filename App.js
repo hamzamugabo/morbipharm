@@ -1,9 +1,9 @@
-import * as React from 'react';
+import React,  { useState, useEffect }from 'react';
 import { Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-
+// import SplashScreen from 'react-native-splash-screen';
 import Login from "./src/auth/Login";
 // import Logout from "./src/auth/Logout";
 import Register from "./src/auth/Register";
@@ -51,6 +51,13 @@ function MyStack() {
   );
 }
 export default function App() {
+  // componentDidMount() {
+  //   SplashScreen.hide()
+  // }
+  // useEffect(() => {
+  //   SplashScreen.hide()
+
+  // });
   return (
     <NavigationContainer>
       {/* <MyTabs /> */}

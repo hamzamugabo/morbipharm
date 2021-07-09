@@ -317,7 +317,7 @@ export default class Home extends React.Component {
 
         <Dialog
           visible={this.state.visible}
-          height={500}
+          height={600}
           footer={
             <DialogFooter>
               <DialogButton
@@ -336,46 +336,55 @@ export default class Home extends React.Component {
                 margin: 70,
                 justifyContent: 'center',
                 alignItems: 'center',
+                height:400
               }}>
+                      <ScrollView>
+
               {this.state.products.map(product_id =>
                 this.state.data
                   .filter(item => item.id == product_id)
                   .map((product, index) => (
-                    <View key={index} style={{marginBottom:30}}>
-                      <View style={styles.buttonsContainer}>
-                        <View>
-                          <Image
-                            style={{width: 70, height: 80, borderRadius: 50}}
-                            source={{
-                              uri: `http://ubuntusx.com/mobipharm/uploads/${product.image}`,
-                            }}
-                          />
+                    <View key={index} style={{marginBottom: 30}}>
+                        <View style={styles.buttonsContainer}>
+                          <View>
+                            <Image
+                              style={{width: 70, height: 80, borderRadius: 50}}
+                              source={{
+                                uri: `http://ubuntusx.com/mobipharm/uploads/${product.image}`,
+                              }}
+                            />
+                          </View>
+                          <View>
+                            <Text>{product.item}</Text>
+                            <Text>{product.category}</Text>
+                            <Text>{product.price}</Text>
+                          </View>
                         </View>
-                        <View>
-                          <Text>{product.item}</Text>
-                          <Text>{product.category}</Text>
-                          <Text>{product.price}</Text>
-                        </View>
-                      </View>
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          justifyContent: 'space-around',
-                        }}>
-                        <TouchableOpacity style={styles.smaillbuttons}>
-                          <Text style={{fontSize: 20, color: '#fff'}}>+</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.smaillbuttons}>
-                          <Text style={{fontSize: 20, color: '#fff'}}>-</Text>
-                        </TouchableOpacity>
+                        <View
+                          style={{
+                            flexDirection: 'row',
+                            justifyContent: 'space-around',
+                          }}>
+                          <TouchableOpacity style={styles.smaillbuttons}>
+                            <Text style={{fontSize: 20, color: '#fff'}}>+</Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity style={styles.smaillbuttons}>
+                            <Text style={{fontSize: 20, color: '#fff'}}>-</Text>
+                          </TouchableOpacity>
 
-                        <TouchableOpacity style={[styles.smaillbuttons,{width:60,backgroundColor:'transparent'}]}>
-                          <Text style={{ color: '#ff751a'}}>Removee</Text>
-                        </TouchableOpacity>
-                      </View>
+                          <TouchableOpacity
+                            style={[
+                              styles.smaillbuttons,
+                              {width: 60, backgroundColor: 'transparent'},
+                            ]}>
+                            <Text style={{color: '#ff751a'}}>Remove</Text>
+                          </TouchableOpacity>
+                        </View>
                     </View>
                   )),
               )}
+                      </ScrollView>
+
             </View>
           </DialogContent>
         </Dialog>
