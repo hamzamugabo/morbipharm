@@ -2,21 +2,16 @@ import * as React from 'react';
 // import { Text, View,TouchableOpacity,Image,StyleSheet,ScrollView,TextInput } from 'react-native';
 import { Text, View, TouchableOpacity,Image,StyleSheet,ScrollView,TextInput,PixelRatio,ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
-
+import {Picker} from '@react-native-community/picker';
 import Dialog, { DialogFooter, DialogButton, DialogContent } from 'react-native-popup-dialog';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import DocumentPicker from 'react-native-document-picker';
 import CheckBox from '@react-native-community/checkbox';
-// import storage from '@react-native-firebase/storage';
-// import ImagePicker from 'react-native-image-picker';
-import RNFetchBlob from 'rn-fetch-blob';
-// import auth from '@react-native-firebase/auth';
-// import database from '@react-native-firebase/database';
 export default class AddProduct extends React.Component{
 constructor(props){
     super(props);
     this.state={
         number:'',
-        category:'',
+        category:'select category',
         product:'',
         quantity:'',
         price:'',
@@ -27,6 +22,7 @@ constructor(props){
         plot:'',data:null,
         photo:[],
         loading:false,
+        image_name:"",
     value: '',
     electricity:false,
     water:false,
@@ -57,95 +53,11 @@ constructor(props){
 componentDidMount(){
 this.getData_();
 }
-takephoto=()=> {
-// this.setState({option:launchCamera});
 
-// selectImage = () => {
-const options = {
-  quality: 1.0,
-  maxWidth: 500,
-  maxHeight: 500,
-  storageOptions: {
-    skipBackup: true,
-  },
-};
-
-launchCamera(options, (response) => { // Use launchImageLibrary to open image gallery
-  // console.log('Response = ', response);
-
-  if (response.didCancel) {
-    console.log('User cancelled image picker');
-  } else if (response.error) {
-    console.log('ImagePicker Error: ', response.error);
-  } else if (response.customButton) {
-    console.log('User tapped custom button: ', response.customButton);
-  } else {
-    response.assets.forEach(data => {
-      this.setState({filename:data.fileName});
-      this.setState({uri_:data.uri});
-     });
-
-    // console.log(this.state.filename);
-    // console.log(this.state.uri_);
-    const source = { uri: this.state.uri_ };
-    this.setState({
-      stimage: source,
-      data: response.assets
-    });
-  }
-});
-this.setState({visible:false});
-
-}
-
-selectphoto=()=> {
-// this.setState({option:launchImageLibrary});
-// selectImage = () => {
-const options = {
-  quality: 1.0,
-  maxWidth: 500,
-  maxHeight: 500,
-  storageOptions: {
-    skipBackup: true,
-  },
-};
-
-launchImageLibrary(options, (response) => { // Use launchImageLibrary to open image gallery
-  // console.log('Response = ', response);
-
-  if (response.didCancel) {
-    console.log('User cancelled image picker');
-  } else if (response.error) {
-    console.log('ImagePicker Error: ', response.error);
-  } else if (response.customButton) {
-    console.log('User tapped custom button: ', response.customButton);
-  } else {
-  
-    response.assets.forEach(data => {
-      this.setState({filename:data.fileName});
-      this.setState({uri_:data.uri});
-     });
-
-     console.log(response);
-    //  this.setState({
- 
-    //   ImageSource: source,
-    //   data: response.data
-
-    // });
-    const source = { uri: this.state.uri_ };
-    this.setState({
-      stimage: source,
-      data: response.assets
-    });
-  }
-});
-this.setState({visible:false});
-
-}
  uploadImage = async () => {
   // Check if any file is selected or not
   if (this.state.setSingleFile != null) {
+    this.setState({loading:true});
     // If file selected then create FormData
     const fileToUpload = this.state.setSingleFile;
     const data = new FormData();
@@ -171,11 +83,24 @@ this.setState({visible:false});
     let responseJson = await res.json();
     if (responseJson.status == 1) {
       
+      // alert('Upload Successful');
 
 this.saveData();
+this.setState({loading:false});
+this.setState({
+  product: '',
+  price: '',
+  quantity: '',
+  category: '',
 
+  discription: '',
+  image_name: '',
+})
 
-    }else{console.log(responseJson)}
+    }else{
+    this.setState({loading:false});
+      
+      console.log(responseJson)}
   } else {
     // If no file selected the show alert
     alert('Please Select File first');
@@ -200,6 +125,12 @@ this.saveData();
     // Setting the state to show single file attributes
     // setSingleFile(res);
     this.setState({setSingleFile:res})
+
+    const source = { uri: res.uri };
+    this.setState({
+      stimage: source,
+      image_name: res.name
+    });
   } catch (err) {
     // setSingleFile(null);
     this.setState({setSingleFile:null})
@@ -243,7 +174,7 @@ if (this.state.product != '') {
                     category: this.state.category,
 
                     discription: this.state.discription,
-                    image: this.state.stimage,
+                    image: this.state.image_name,
                    
                   }),
                 },
@@ -407,17 +338,45 @@ this.setState({visible:true});
                 value={this.state.quantity}
               />
             </View>
-            <View style={styles.inputContainerRow}>
-              <TextInput
+            
+            </View>
+            <View style={styles.inputContainer}>
+            <Picker
+  selectedValue={this.state.category}
+  style={{height: 50, width: 250}}
+  onValueChange={(itemValue, itemIndex) =>
+    this.setState({category: itemValue})
+  }
+  // style={{width:}}
+  >
+  <Picker.Item label="Select category.." value="" />
+  <Picker.Item label="Condoms" value="Condoms" />
+  <Picker.Item label="Plasters" value="Plasters" />
+  <Picker.Item label="Cosmetics" value="Cosmetics" />
+  <Picker.Item label="Alcohol pads" value="Alcohol pads" />
+  <Picker.Item label="Hypertensive medicines" value="Hypertensive medicines" />
+  <Picker.Item label="Creams" value="Creams" />
+  <Picker.Item label="Erectile Enhancer" value="Erectile Enhancer" />
+  <Picker.Item label="Inhaler" value="Inhaler" />
+  <Picker.Item label="Anti-Diabetics" value="Anti-Diabetics" />
+  <Picker.Item label="Hormone Treatment" value="Hormone Treatment" />
+  <Picker.Item label="Anti-Malarials" value="Anti-Malarials" />
+  <Picker.Item label="PainKiller" value="PainKiller" />
+  <Picker.Item label="Gloves" value="Gloves" />
+  <Picker.Item label="Multi-vitamins " value="Multi-vitamins " />
+  <Picker.Item label="Anti-Diabetics" value="Anti-Diabetics" />
+  <Picker.Item label="Hand Sanitiser" value="Hand Sanitiser" />
+  <Picker.Item label="Pregnancy Test" value="Pregnancy Test" />
+  <Picker.Item label="Mouth Wash" value="Mouth Wash" />
+</Picker>
+              {/* <TextInput
                 underlineColorAndroid="transparent"
                 placeholder="Category"
                 style={styles.inputs}
                 onChangeText={(category) => this.setState({category})}
                 value={this.state.category}
-              />
+              /> */}
             </View>
-            </View>
-           
             <View style={[styles.inputContainer, {height:70}]}>
               <TextInput
                 underlineColorAndroid="transparent"
@@ -436,7 +395,7 @@ this.setState({visible:true});
            
             <TouchableOpacity
               style={[styles.buttonContainer, styles.loginButton]}
-              onPress={this.saveData}>
+              onPress={this.uploadImage}>
               <Text style={styles.loginText}>Add Item</Text>
             </TouchableOpacity>
           </View>

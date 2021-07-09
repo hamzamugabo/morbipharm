@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Text, View,FlatList ,StyleSheet,TouchableHighlight,ScrollView,Image,TouchableOpacity} from 'react-native';
+import { Text, View,FlatList,ActivityIndicator ,StyleSheet,TouchableHighlight,ScrollView,Image,TouchableOpacity} from 'react-native';
 // import database from '@react-native-firebase/database';
 // import storage from '@react-native-firebase/storage';
 import call from 'react-native-phone-call';
@@ -22,19 +22,44 @@ export default class Home extends React.Component{
       disabled: false,
       photos:[],
       photos2:[],
+      value:'',
       setland:false,
       setbuilding:false
     };
+  }
+  all=()=>{
+    this.setState({loading:true,value:''});
+    fetch(
+      // 192.168.42.153
+      'https://ubuntusx.com/mobipharm/products.php',
+      // 'https://reactnative.dev/movies.json'
+    )
+      .then(response => response.json())
+      .then(json => {
+        this.setState({data:json});
+        // setData(json);
+        // setisLoading(false);
+    this.setState({loading:false});
+
+      })
+      .catch(error => {
+        if (error) {
+          console.error(error);
+          this.setState({loading:false})
+        }
+      })
+      .finally(() => this.setState({loading:false}));
   }
   componentDidMount(){
     this.setState({loading:true});
     fetch(
       // 192.168.42.153
-      'https://ubuntusx.com/server_files/loans.php',
+      'https://ubuntusx.com/mobipharm/products.php',
       // 'https://reactnative.dev/movies.json'
     )
       .then(response => response.json())
       .then(json => {
+        this.setState({data:json});
         // setData(json);
         // setisLoading(false);
     this.setState({loading:false});
@@ -89,8 +114,8 @@ alert(e);
       value: text,
     });
 
-    const newData = this.arrayholder.filter((item) => {
-      const itemData = `${item.acaricide_name.toUpperCase()} ${item.target_parasite.toUpperCase()}${item.manufacturer.toUpperCase()}`;
+    const newData = this.state.data.filter((item) => {
+      const itemData = `${item.item.toUpperCase()} ${item.category.toUpperCase()}${item.price.toUpperCase()}`;
       const textData = text.toUpperCase();
 
       return itemData.indexOf(textData) > -1;
@@ -115,61 +140,53 @@ alert(e);
   _renderItem = ({ item }) => {
    
     return (
+      
       <Card
       style={{width:'100%'}}
       >
-      <View style={[styles.buttonsContainers, {marginBottom: 20}]}>
-        {this.state.photos.map((photo_url,index)=>(
+        {
+          this.state.loading?
+          <ActivityIndicator size="large" animating={true} color='#bc2b78' />
+        :
+        <View>
+<View style={[styles.buttonsContainers, {marginBottom: 20}]}>
 
-photo_url.includes(item.photo)?
+
 <Image
-key={index}
-style={{width: '100%', height: 200}}
-source={{uri: `${photo_url}`}}
-/>:null
+style={{width: '100%', height: 80}}
+source={{uri: `http://ubuntusx.com/mobipharm/uploads/${item.image}`}}
+/>
 
-        ))}
-     
-        </View>
-      <View style={[styles.buttonsContainers, {marginBottom: 20}]}>
-          <Text style={styles.details}>amount:</Text>
-          <Text style={styles.value}>{item.amount}</Text>
-          {/* <Text style={styles.value}></Text> */}
-        </View>
-        <View style={[styles.buttonsContainers, {marginBottom: 20}]}>
-          <Text style={styles.details}>location:</Text>
-          <Text style={styles.value}>{item.location}</Text>
-          {/* <Text style={styles.value}></Text> */}
-        </View>
+</View>
+<View style={[styles.buttonsContainers, {marginBottom: 20}]}>
+  <Text style={styles.details}>category:</Text>
+  <Text style={styles.value}>{item.category}</Text>
+</View>
+<View style={[styles.buttonsContainers, {marginBottom: 20}]}>
+  <Text style={styles.details}>product:</Text>
+  <Text style={styles.value}>{item.item}</Text>
+</View>
 
-        <View style={[styles.buttonsContainers, {marginBottom: 20}]}>
-          <Text style={styles.details}>owner:</Text>
-          <Text style={styles.value}>{item.owner}</Text>
-          {/* <Text style={styles.value}></Text> */}
-        </View>
+<View style={[styles.buttonsContainers, {marginBottom: 20}]}>
+  <Text style={styles.details}>price:</Text>
+  <Text style={styles.value}>{item.price}</Text>
+</View>
 
-        
+<View style={[styles.buttonsContainers, {marginBottom: 20}]}>
+  <Text style={styles.details}>quantity:</Text>
+  <Text style={styles.value}>{item.quantity}</Text>
+</View>
 
-        <View style={[styles.buttonsContainers, {marginBottom: 20}]}>
-          <Text style={styles.details}>Tellphone:</Text>
-          <Text style={styles.value}>{item.number}</Text>
-          <TouchableOpacity
-          onPress={this.call.bind(this, item)}
-          >
-           <Image
-            style={{width: 30, height: 30}}
-            source={require('./images/phone.png')}
-          />
-          </TouchableOpacity>
+<View style={[styles.buttonsContainers, {marginBottom: 20}]}>
+  <Text style={styles.details}>Description:</Text>
+  <Text style={styles.value}>{item.discription}</Text>
+</View>
+
         </View>
 
-        <View style={[styles.buttonsContainers, {marginBottom: 20}]}>
-          <Text style={styles.details}>Description:</Text>
-          <Text style={styles.value}>{item.description}</Text>
-          {/* <Text style={styles.value}></Text> */}
-        </View>
 
-        
+        }
+      
       {/* </View> */}
       </Card>
     );
@@ -198,7 +215,7 @@ onPress={() => this.props.navigation.navigate('Settings')}
                 </View>
                 <View  style={{borderBottomColor:'orange',padding:10}}>
                  <TouchableHighlight
-                 onPress={()=>this.setState({setland:false,setbuilding:false})}
+                 onPress={this.all}
                 style={[styles.buttonContainer, styles.loginButton,{height:30}]}
                 // onPress={this.searchFilterFunction}
                 
@@ -225,7 +242,10 @@ onPress={() => this.props.navigation.navigate('Settings')}
                 
                 </View>
                 <View style={{marginBottom:200}}>
-                <FlatList
+                  {this.state.loading?
+          <ActivityIndicator size="large" animating={true} color='#bc2b78' />
+                  :
+                  <FlatList
           data={this.state.data}
           renderItem={this._renderItem}
           keyExtractor={(item, index) => {
@@ -234,6 +254,8 @@ onPress={() => this.props.navigation.navigate('Settings')}
           ItemSeparatorComponent={this.renderSeparator}
           ListHeaderComponent={this.renderHeader}
         />
+                }
+                
                 </View>
                 {/* <FlatList
               data={this.state.data}
