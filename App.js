@@ -15,6 +15,7 @@ import AddProduct from './src/AddProduct';
 // import MakePayments from './src/MakePayment';
 import SignOut from './src/auth/SignOut';
 import Main from './src/Main';
+import Cart from './src/Cart';
 
 
 
@@ -35,6 +36,7 @@ function MyStack() {
      <Stack.Screen name="Home" component={Home} />
     <Stack.Screen name="SignOut" component={SignOut} /> 
     <Stack.Screen name="Main" component={Main} /> 
+    <Stack.Screen name="Cart" component={Cart} /> 
 
        {/* <Stack.Screen name="Land" component={Land} />
       <Stack.Screen name="Building" component={Building} />

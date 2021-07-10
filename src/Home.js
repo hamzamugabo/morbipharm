@@ -28,12 +28,14 @@ import {
   withBadge,
 } from 'react-native-elements';
 var cart = [];
+var cart_price = [];
 export default class Home extends React.Component {
   constructor() {
     super();
 
     this.state = {
       products: [],
+      prices: [],
       data: [],
       data2: [],
       is_admin: false,
@@ -44,6 +46,7 @@ export default class Home extends React.Component {
       visible: false,
       photos: [],
       photos2: [],
+      total:'',
       value: '',
       setland: false,
       setbuilding: false,
@@ -118,10 +121,45 @@ export default class Home extends React.Component {
     // console.log(data);
   };
   buy = item => {
+    // this.state.products.some(item => item === item.id);
+    // this.setState({products: unique});
+if(cart.length == 0 && cart_price.length == 0){
     cart.push(item.id);
     var unique = cart.filter((v, i, a) => a.indexOf(v) === i);
     console.log(unique);
     this.setState({products: unique});
+
+    cart_price.push(parseInt(item.price));
+    var unique_ = cart_price.filter((v, i, a) => a.indexOf(v) === i);
+    console.log(unique_);
+    this.setState({prices: unique_});
+    let sum =parseInt(item.price) ;
+  
+    for (let i = 0; i < this.state.prices.length; i++) {
+        sum += this.state.prices[i];
+    }
+    console.log(sum);
+    this.setState({total:sum});
+    
+  }else{
+    cart = this.state.products;
+    cart.push(item.id);
+    var unique = cart.filter((v, i, a) => a.indexOf(v) === i);
+    console.log(unique);
+    this.setState({products: unique});
+
+    cart_price.push(parseInt(item.price));
+    var unique_ = cart_price.filter((v, i, a) => a.indexOf(v) === i);
+    console.log(unique_);
+    this.setState({prices: unique_});
+    let sum = 0;
+  
+    for (let i = 0; i < this.state.prices.length; i++) {
+        sum += this.state.prices[i];
+    }
+    console.log(sum);
+    this.setState({total:sum});
+  }
   };
   renderSeparator = () => {
     return (
@@ -150,7 +188,33 @@ export default class Home extends React.Component {
       data: newData,
     });
   };
+remove=(e)=>{
+  // console.log(e);
+  // this.s
+  
+  var array2 = [...this.state.prices]; // make a separate copy of the array2
+  var index2 = array2.indexOf(e.price)
+  if (index2 !== -1) {
+    array2.splice(index, 1);
+    this.setState({prices: array2});
+  }
+  console.log(this.state.prices);
+  var array = [...this.state.products]; // make a separate copy of the array
+  var index = array.indexOf(e.id)
+  if (index !== -1) {
+    array.splice(index, 1);
+    this.setState({products: array});
+  }
+  // const array = [1, 2, 3, 4];
+  let sum = 0;
+  
+  for (let i = 0; i < this.state.prices.length; i++) {
+      sum += this.state.prices[i];
+  }
+  console.log(sum);
+  this.setState({total:sum});
 
+}
   renderHeader = () => {
     return (
       <SearchBar
@@ -333,10 +397,13 @@ export default class Home extends React.Component {
           <DialogContent>
             <View
               style={{
-                margin: 70,
+                marginLeft: 70,
+                marginTop: 10,
+                marginRight: 70,
                 justifyContent: 'center',
                 alignItems: 'center',
-                height:400
+                height:500,
+                maxWidth:'100%'
               }}>
                       <ScrollView>
 
@@ -344,7 +411,7 @@ export default class Home extends React.Component {
                 this.state.data
                   .filter(item => item.id == product_id)
                   .map((product, index) => (
-                    <View key={index} style={{marginBottom: 30}}>
+                    <View key={index} style={{marginBottom: 30,maxWidth:'100%'}}>
                         <View style={styles.buttonsContainer}>
                           <View>
                             <Image
@@ -373,6 +440,7 @@ export default class Home extends React.Component {
                           </TouchableOpacity>
 
                           <TouchableOpacity
+                          onPress={this.remove.bind(this,product)}
                             style={[
                               styles.smaillbuttons,
                               {width: 60, backgroundColor: 'transparent'},
@@ -384,7 +452,7 @@ export default class Home extends React.Component {
                   )),
               )}
                       </ScrollView>
-
+<Text>{this.state.total}</Text>
             </View>
           </DialogContent>
         </Dialog>
