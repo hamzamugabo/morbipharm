@@ -46,7 +46,7 @@ export default class Home extends React.Component {
       visible: false,
       photos: [],
       photos2: [],
-      total:'',
+      total: '',
       value: '',
       setland: false,
       setbuilding: false,
@@ -123,43 +123,54 @@ export default class Home extends React.Component {
   buy = item => {
     // this.state.products.some(item => item === item.id);
     // this.setState({products: unique});
-if(cart.length == 0 && cart_price.length == 0){
-    cart.push(item.id);
-    var unique = cart.filter((v, i, a) => a.indexOf(v) === i);
-    console.log(unique);
-    this.setState({products: unique});
+    if (cart.length == 0 && cart_price.length == 0) {
+      cart.push(item.id);
+      var unique = cart.filter((v, i, a) => a.indexOf(v) === i);
+      // console.log(unique);
+      this.setState({products: unique});
 
-    cart_price.push(parseInt(item.price));
-    var unique_ = cart_price.filter((v, i, a) => a.indexOf(v) === i);
-    console.log(unique_);
-    this.setState({prices: unique_});
-    let sum =parseInt(item.price) ;
-  
-    for (let i = 0; i < this.state.prices.length; i++) {
-        sum += this.state.prices[i];
-    }
-    console.log(sum);
-    this.setState({total:sum});
-    
-  }else{
-    cart = this.state.products;
-    cart.push(item.id);
-    var unique = cart.filter((v, i, a) => a.indexOf(v) === i);
-    console.log(unique);
-    this.setState({products: unique});
+      cart_price.push(parseInt(item.price));
+      var unique_ = cart_price.filter((v, i, a) => a.indexOf(v) === i);
+      // console.log(unique_);
+      this.setState({prices: unique_});
+      let prod;
+      prod = this.state.products.map(ids =>
+        this.state.data
+          .filter(item => item.id == ids)
+          .map(product => parseInt(product.price)),
+      );
 
-    cart_price.push(parseInt(item.price));
-    var unique_ = cart_price.filter((v, i, a) => a.indexOf(v) === i);
-    console.log(unique_);
-    this.setState({prices: unique_});
-    let sum = 0;
-  
-    for (let i = 0; i < this.state.prices.length; i++) {
-        sum += this.state.prices[i];
+      var merged = [].concat.apply([], prod);
+
+      this.setState({prices: merged});
+      // console.log(
+      //   merged.reduce((a, b) => a + b)
+      // )
+    } else {
+      cart = this.state.products;
+      cart.push(item.id);
+      var unique = cart.filter((v, i, a) => a.indexOf(v) === i);
+      // console.log(unique);
+      this.setState({products: unique});
+
+      cart_price.push(parseInt(item.price));
+      var unique_ = cart_price.filter((v, i, a) => a.indexOf(v) === i);
+      // console.log(unique_);
+      this.setState({prices: unique_});
+
+      let prod;
+      prod = this.state.products.map(ids =>
+        this.state.data
+          .filter(item => item.id == ids)
+          .map(product => parseInt(product.price)),
+      );
+      var merged = [].concat.apply([], prod);
+      this.setState({prices: merged});
+
+      // console.log(
+      //   merged.reduce((a, b) => a + b)
+      // )
     }
-    console.log(sum);
-    this.setState({total:sum});
-  }
   };
   renderSeparator = () => {
     return (
@@ -188,33 +199,32 @@ if(cart.length == 0 && cart_price.length == 0){
       data: newData,
     });
   };
-remove=(e)=>{
-  // console.log(e);
-  // this.s
-  
-  var array2 = [...this.state.prices]; // make a separate copy of the array2
-  var index2 = array2.indexOf(e.price)
-  if (index2 !== -1) {
-    array2.splice(index, 1);
-    this.setState({prices: array2});
-  }
-  console.log(this.state.prices);
-  var array = [...this.state.products]; // make a separate copy of the array
-  var index = array.indexOf(e.id)
-  if (index !== -1) {
-    array.splice(index, 1);
-    this.setState({products: array});
-  }
-  // const array = [1, 2, 3, 4];
-  let sum = 0;
-  
-  for (let i = 0; i < this.state.prices.length; i++) {
-      sum += this.state.prices[i];
-  }
-  console.log(sum);
-  this.setState({total:sum});
+  remove = e => {
+    // console.log(e.price);
+    // this.s
 
-}
+    var array2 = [...this.state.prices]; // make a separate copy of the array2
+    var index2 = array2.indexOf(e.price);
+    if (index2 !== -1) {
+      array2.splice(index2, 1);
+      this.setState({prices: array2});
+    }
+    console.log(this.state.prices);
+    var array = [...this.state.products]; // make a separate copy of the array
+    var index = array.indexOf(e.id);
+    if (index !== -1) {
+      array.splice(index, 1);
+      this.setState({products: array});
+    }
+      let prod;
+    prod = this.state.products.map(ids =>
+      this.state.data
+        .filter(item => item.id == ids)
+        .map(product => parseInt(product.price)),
+    );
+   let new_total=this.state.total - e.price;
+   this.setState({total:new_total});
+  };
   renderHeader = () => {
     return (
       <SearchBar
@@ -306,7 +316,13 @@ remove=(e)=>{
             />
             {/* <Text>Settings</Text> */}
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => this.setState({visible: true})}>
+          <TouchableOpacity
+            onPress={() => {
+              this.setState({
+                visible: true,
+                total: this.state.prices.reduce((a, b) => a + b, 0),
+              });
+            }}>
             <View>
               <Badge
                 value={this.state.products.length}
@@ -402,16 +418,17 @@ remove=(e)=>{
                 marginRight: 70,
                 justifyContent: 'center',
                 alignItems: 'center',
-                height:500,
-                maxWidth:'100%'
+                height: 500,
+                maxWidth: '100%',
               }}>
-                      <ScrollView>
-
-              {this.state.products.map(product_id =>
-                this.state.data
-                  .filter(item => item.id == product_id)
-                  .map((product, index) => (
-                    <View key={index} style={{marginBottom: 30,maxWidth:'100%'}}>
+              <ScrollView>
+                {this.state.products.map(product_id =>
+                  this.state.data
+                    .filter(item => item.id == product_id)
+                    .map((product, index) => (
+                      <View
+                        key={index}
+                        style={{marginBottom: 30, maxWidth: '100%'}}>
                         <View style={styles.buttonsContainer}>
                           <View>
                             <Image
@@ -440,7 +457,7 @@ remove=(e)=>{
                           </TouchableOpacity>
 
                           <TouchableOpacity
-                          onPress={this.remove.bind(this,product)}
+                            onPress={this.remove.bind(this, product)}
                             style={[
                               styles.smaillbuttons,
                               {width: 60, backgroundColor: 'transparent'},
@@ -448,11 +465,11 @@ remove=(e)=>{
                             <Text style={{color: '#ff751a'}}>Remove</Text>
                           </TouchableOpacity>
                         </View>
-                    </View>
-                  )),
-              )}
-                      </ScrollView>
-<Text>{this.state.total}</Text>
+                      </View>
+                    )),
+                )}
+              </ScrollView>
+              <Text>{this.state.total}</Text>
             </View>
           </DialogContent>
         </Dialog>

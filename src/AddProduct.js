@@ -318,6 +318,7 @@ this.setState({visible:true});
             <View style={[styles.inputContainer]}>
               <TextInput
                 underlineColorAndroid="transparent"
+                keyboardType="numeric"
                 placeholder="Price"
                 style={styles.inputsmulti}
                 onChangeText={(price) =>
@@ -325,7 +326,7 @@ this.setState({visible:true});
                 }
                 value={this.state.price}
                 // multiline={true}
-              />
+              /><Text>UGX</Text>
             </View>
             
             <View style={styles.buttonsContainers}>
