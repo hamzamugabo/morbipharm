@@ -29,6 +29,7 @@ import {
 } from 'react-native-elements';
 var cart = [];
 var cart_price = [];
+var items = [];
 export default class Home extends React.Component {
   constructor() {
     super();
@@ -46,12 +47,68 @@ export default class Home extends React.Component {
       visible: false,
       photos: [],
       photos2: [],
+      setData3:[],
+      added_products:[],
       total: '',
+      setData2:"",
       value: '',
       setland: false,
       setbuilding: false,
+      checkout: false,
     };
   }
+
+   getData_ = async () => {
+    try {
+      const jsonValue = await AsyncStorage.getItem('@storage_Key');
+      // return jsonValue != null ? JSON.parse(jsonValue) : null;
+      this.setState({setData2:JSON.parse(jsonValue)});
+      // console.log(data2);
+
+      fetch('https://ubuntusx.com/mobipharm/userProfile.php', {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: this.state.setData2.email,
+
+          password: this.state.setData2.pass,
+        }),
+      })
+        .then(response => response.json())
+        .then(responseJson => {
+          this.state({setData3:responseJson});
+          // responseJson.forEach(data => {
+          //   setuser_id(data.id);
+          //   setuser_role(data.role);
+          // });
+          // console.log(data3);
+
+          async function fetchUser() {
+            try {
+              const jsonValue = JSON.stringify(responseJson);
+              await AsyncStorage.setItem('@userprofile', jsonValue);
+              // console.log(e);
+            } catch (e) {
+              // saving error
+              console.log(e);
+            }
+          }
+          fetchUser();
+          // this.setState({loading: false, disabled: false});
+        })
+        .catch(error => {
+          console.error(error);
+
+          // this.setState({loading: false, disabled: false});
+        });
+    } catch (e) {
+      // error reading value
+      console.log(e);
+    }
+  };
   all = () => {
     this.setState({loading: true, value: ''});
     fetch(
@@ -95,6 +152,9 @@ export default class Home extends React.Component {
         }
       })
       .finally(() => this.setState({loading: false}));
+
+this.getData_();
+
   }
   call = item => {
     const args = {
@@ -301,6 +361,45 @@ export default class Home extends React.Component {
       </Card>
     );
   };
+
+  add=(product)=>{
+    if (items.length == 0) {
+
+   items.push(product.id);
+    var unique = this.state.added_products.filter((v, i, a) => a.indexOf(v) === i);
+    // console.log(unique);
+    this.setState({added_products: items});
+    // console.log(this.state.added_products.length);
+
+    var count = this.state.added_products.filter(x => x == product.id).length;
+    }else{
+      items = this.state.added_products
+      
+   items.push(product.id);
+   var unique = this.state.added_products.filter((v, i, a) => a.indexOf(v) === i);
+   // console.log(unique);
+   this.setState({added_products: items});
+  //  console.log(this.state.added_products.length);
+
+   var count = this.state.added_products.filter(x => x == product.id).length;
+    }
+  }
+  reduce=(product)=>{
+    var array2 = [...this.state.added_products]; // make a separate copy of the array2
+    var index2 = array2.indexOf(product.id);
+    if (index2 !== -1) {
+      array2.splice(index2, 1);
+      this.setState({added_products: array2});
+    }
+    console.log(this.state.added_products);
+  }
+  checkout=()=>{
+    this.setState({
+      visible:false,
+      checkout:true
+    });
+
+  }
   render() {
     return (
       <View style={{flex: 1, marginTop: 10}}>
@@ -413,9 +512,9 @@ export default class Home extends React.Component {
           <DialogContent>
             <View
               style={{
-                marginLeft: 70,
+                marginLeft: 60,
                 marginTop: 10,
-                marginRight: 70,
+                marginRight: 60,
                 justifyContent: 'center',
                 alignItems: 'center',
                 height: 500,
@@ -430,9 +529,9 @@ export default class Home extends React.Component {
                         key={index}
                         style={{marginBottom: 30, maxWidth: '100%'}}>
                         <View style={styles.buttonsContainer}>
-                          <View>
+                          <View style={{marginRight:10}}>
                             <Image
-                              style={{width: 70, height: 80, borderRadius: 50}}
+                              style={{width: 60, height: 70, borderRadius: 50}}
                               source={{
                                 uri: `http://ubuntusx.com/mobipharm/uploads/${product.image}`,
                               }}
@@ -443,16 +542,30 @@ export default class Home extends React.Component {
                             <Text>{product.category}</Text>
                             <Text>{product.price}</Text>
                           </View>
+                          <View style={{marginLeft:10}}>
+                            
+                              
+                             <Text style={{fontWeight:'bold'}}>{this.state.added_products.filter(x => x == product.id).length}  items</Text> 
+
+                            
+
+                          </View>
                         </View>
                         <View
                           style={{
                             flexDirection: 'row',
                             justifyContent: 'space-around',
+                            marginTop:20
                           }}>
-                          <TouchableOpacity style={styles.smaillbuttons}>
+                          <TouchableOpacity style={styles.smaillbuttons}
+                          onPress={this.add.bind(this,product)}
+                          >
                             <Text style={{fontSize: 20, color: '#fff'}}>+</Text>
                           </TouchableOpacity>
-                          <TouchableOpacity style={styles.smaillbuttons}>
+                          <TouchableOpacity 
+                          onPress={this.reduce.bind(this,product)}
+                          
+                          style={styles.smaillbuttons}>
                             <Text style={{fontSize: 20, color: '#fff'}}>-</Text>
                           </TouchableOpacity>
 
@@ -469,10 +582,60 @@ export default class Home extends React.Component {
                     )),
                 )}
               </ScrollView>
-              <Text>{this.state.total}</Text>
+              {/* <Text>{this.state.total}</Text> */}
+              <TouchableOpacity
+              onPress={this.state.checkout}
+              style={[styles.smaillbuttons,{width:70,height:30}]}
+              >
+                <Text style={{color:'#fff'}}>Checkout</Text>
+              </TouchableOpacity>
             </View>
           </DialogContent>
         </Dialog>
+
+
+
+        
+        <Dialog
+          visible={this.state.checkout}
+          height={600}
+          footer={
+            <DialogFooter>
+              <DialogButton
+                text="CANCEL"
+                onPress={() => this.setState({checkout: false})}
+              />
+              <DialogButton
+                text="OK"
+                onPress={() => this.setState({checkout: false})}
+              />
+            </DialogFooter>
+          }>
+          <DialogContent>
+            <View
+              style={{
+                marginLeft: 70,
+                marginTop: 10,
+                marginRight: 70,
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: 500,
+                maxWidth: '100%',
+              }}>
+              <ScrollView>
+                
+              </ScrollView>
+              <Text>{this.state.total}</Text>
+              <TouchableOpacity
+              onPress={this.state.checkout}
+              style={[styles.smaillbuttons,{width:70,height:30}]}
+              >
+                <Text style={{color:'#fff'}}>Checkout</Text>
+              </TouchableOpacity>
+            </View>
+          </DialogContent>
+        </Dialog>
+
       </View>
     );
   }
