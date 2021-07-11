@@ -369,9 +369,16 @@ this.getData_();
     var unique = this.state.added_products.filter((v, i, a) => a.indexOf(v) === i);
     // console.log(unique);
     this.setState({added_products: items});
-    // console.log(this.state.added_products.length);
+    let prod;
+    prod = this.state.added_products.map(ids =>
+      this.state.data
+        .filter(item => item.id == ids)
+        .map(product => parseInt(product.price)),
+    );
 
-    var count = this.state.added_products.filter(x => x == product.id).length;
+    var merged = [].concat.apply([], prod);
+console.log(merged)
+
     }else{
       items = this.state.added_products
       
@@ -379,9 +386,16 @@ this.getData_();
    var unique = this.state.added_products.filter((v, i, a) => a.indexOf(v) === i);
    // console.log(unique);
    this.setState({added_products: items});
-  //  console.log(this.state.added_products.length);
+   let prod;
+    prod = this.state.added_products.map(ids =>
+      this.state.data
+        .filter(item => item.id == ids)
+        .map(product => parseInt(product.price)),
+    );
 
-   var count = this.state.added_products.filter(x => x == product.id).length;
+    var merged = [].concat.apply([], prod);
+console.log(merged)
+
     }
   }
   reduce=(product)=>{
@@ -582,7 +596,7 @@ this.getData_();
                     )),
                 )}
               </ScrollView>
-              {/* <Text>{this.state.total}</Text> */}
+              <Text>{this.state.total}</Text>
               <TouchableOpacity
               onPress={this.state.checkout}
               style={[styles.smaillbuttons,{width:70,height:30}]}
