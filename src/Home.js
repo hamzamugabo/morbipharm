@@ -181,18 +181,21 @@ this.getData_();
     // console.log(data);
   };
   buy = item => {
-    // this.state.products.some(item => item === item.id);
-    // this.setState({products: unique});
     if (cart.length == 0 && cart_price.length == 0) {
       cart.push(item.id);
       var unique = cart.filter((v, i, a) => a.indexOf(v) === i);
       // console.log(unique);
       this.setState({products: unique});
+      if(items.length==0){
+items=this.state.products;
 
+this.setState({added_products:items})
+
+      }
       cart_price.push(parseInt(item.price));
       var unique_ = cart_price.filter((v, i, a) => a.indexOf(v) === i);
       // console.log(unique_);
-      this.setState({prices: unique_});
+      // this.setState({prices: unique_});
       let prod;
       prod = this.state.products.map(ids =>
         this.state.data
@@ -205,18 +208,26 @@ this.getData_();
       this.setState({prices: merged});
       // console.log(
       //   merged.reduce((a, b) => a + b)
+     this.setState({total: this.state.prices.reduce((a, b) => a + b, 0),}) 
+
       // )
     } else {
       cart = this.state.products;
+      console.log(cart)
       cart.push(item.id);
       var unique = cart.filter((v, i, a) => a.indexOf(v) === i);
       // console.log(unique);
       this.setState({products: unique});
-
+      if(items.length==0){
+        items=this.state.products;
+        
+        this.setState({added_products:items})
+        
+              }
       cart_price.push(parseInt(item.price));
       var unique_ = cart_price.filter((v, i, a) => a.indexOf(v) === i);
       // console.log(unique_);
-      this.setState({prices: unique_});
+      // this.setState({prices: unique_});
 
       let prod;
       prod = this.state.products.map(ids =>
@@ -226,6 +237,7 @@ this.getData_();
       );
       var merged = [].concat.apply([], prod);
       this.setState({prices: merged});
+      this.setState({total: merged.reduce((a, b) => a + b, 0),}) 
 
       // console.log(
       //   merged.reduce((a, b) => a + b)
@@ -377,13 +389,33 @@ this.getData_();
     );
 
     var merged = [].concat.apply([], prod);
-    console.log(`added_prodeucts ${merged}`)
-    console.log(`prices ${this.state.prices}`)
+    // console.log(`added_prodeucts ${merged}`)
+    // console.log(`prices ${this.state.prices}`)
     
     if(merged.length>0){
       let checker = (arr, target) => target.every(v => arr.includes(v));
 
-console.log(checker(merged, this.state.prices));
+// console.log(checker(merged, this.state.prices));
+if(checker(merged, this.state.prices)){
+  this.setState({prices:merged,total:merged.reduce((a, b) => a + b, 0)});
+}else{
+console.log(merged.includes(parseInt(product.price)))
+console.log(this.state.prices.includes(parseInt(product.price)))
+if(merged.includes(parseInt(product.price)) && this.state.prices.includes(parseInt(product.price))){
+  const index = this.state.prices.indexOf(5);
+  if (index > -1) {
+  this.setState({prices:this.state.prices.splice(index, 1)});
+
+  }
+  
+  var new_array=merged.concat(this.state.prices);
+  this.setState({prices:new_array,total:new_array.reduce((a, b) => a + b, 0)});
+  console.log(new_array);
+
+}
+
+}
+
     }
     // var myArray = this.state.added_products.filter( function( el ) {
     //   return this.state.prices.indexOf( el ) < 0;
@@ -405,20 +437,34 @@ console.log(checker(merged, this.state.prices));
 
     var merged = [].concat.apply([], prod);
     // var merged = [].concat.apply([], prod);
-    console.log(`added_prodeucts ${merged}`)
-    console.log(`prices ${this.state.prices}`)
+    // console.log(`added_prodeucts ${merged}`)
+    // console.log(`prices ${this.state.prices}`)
     
     
     if(merged.length>0){
       let checker = (arr, target) => target.every(v => arr.includes(v));
 
-console.log(checker(merged, this.state.prices));
+// console.log(checker(merged, this.state.prices));
+if(checker(merged, this.state.prices)){
+  this.setState({prices:merged,total:merged.reduce((a, b) => a + b, 0)});
+}else{console.log(merged.includes(parseInt(product.price)))
+  console.log(this.state.prices.includes(parseInt(product.price)))
+  if(merged.includes(parseInt(product.price)) && this.state.prices.includes(parseInt(product.price))){
+    const index = this.state.prices.indexOf(5);
+    if (index > -1) {
+    this.setState({prices:this.state.prices.splice(index, 1)});
+  
     }
-    // var myArray = this.state.added_products.filter( function( el ) {
-    //   return this.state.prices.indexOf( el ) < 0;
-    // } );
-    // console.log(`new array ${myArray}`);
     
+    var new_array=merged.concat(this.state.prices);
+    this.setState({prices:new_array,total:new_array.reduce((a, b) => a + b, 0)});
+    console.log(new_array);
+  
+  }
+  
+}
+
+    }
     }
   }
   reduce=(product)=>{
@@ -454,10 +500,35 @@ console.log(checker(merged, this.state.prices));
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
+              if(this.state.added_products.length==0){
+                
+      let prod;
+      prod = this.state.products.map(ids =>
+        this.state.data
+          .filter(item => item.id == ids)
+          .map(product => parseInt(product.price)),
+      );
+
+      var merged = [].concat.apply([], prod);
+
+      this.setState({prices: merged});
+      // console.log(
+      //   merged.reduce((a, b) => a + b)
+     this.setState({
+      visible: true,
+       
+      total: this.state.prices.reduce((a, b) => a + b, 0),}) 
+                // items=this.state.products;
+                
+                // this.setState({added_products:items})
+                
+                      }else{
+                        
               this.setState({
                 visible: true,
                 total: this.state.prices.reduce((a, b) => a + b, 0),
               });
+                      }
             }}>
             <View>
               <Badge
