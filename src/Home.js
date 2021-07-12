@@ -377,8 +377,18 @@ this.getData_();
     );
 
     var merged = [].concat.apply([], prod);
-console.log(merged)
+    console.log(`added_prodeucts ${merged}`)
+    console.log(`prices ${this.state.prices}`)
+    
+    if(merged.length>0){
+      let checker = (arr, target) => target.every(v => arr.includes(v));
 
+console.log(checker(merged, this.state.prices));
+    }
+    // var myArray = this.state.added_products.filter( function( el ) {
+    //   return this.state.prices.indexOf( el ) < 0;
+    // } );
+    // console.log(`new array ${myArray}`);
     }else{
       items = this.state.added_products
       
@@ -394,8 +404,21 @@ console.log(merged)
     );
 
     var merged = [].concat.apply([], prod);
-console.log(merged)
+    // var merged = [].concat.apply([], prod);
+    console.log(`added_prodeucts ${merged}`)
+    console.log(`prices ${this.state.prices}`)
+    
+    
+    if(merged.length>0){
+      let checker = (arr, target) => target.every(v => arr.includes(v));
 
+console.log(checker(merged, this.state.prices));
+    }
+    // var myArray = this.state.added_products.filter( function( el ) {
+    //   return this.state.prices.indexOf( el ) < 0;
+    // } );
+    // console.log(`new array ${myArray}`);
+    
     }
   }
   reduce=(product)=>{
