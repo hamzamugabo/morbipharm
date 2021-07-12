@@ -27,6 +27,7 @@ import {
   Icon,
   withBadge,
 } from 'react-native-elements';
+import {SlideFromRightIOS} from '@react-navigation/stack/lib/typescript/src/TransitionConfigs/TransitionPresets';
 var cart = [];
 var cart_price = [];
 var items = [];
@@ -47,10 +48,10 @@ export default class Home extends React.Component {
       visible: false,
       photos: [],
       photos2: [],
-      setData3:[],
-      added_products:[],
+      setData3: [],
+      added_products: [],
       total: '',
-      setData2:"",
+      setData2: '',
       value: '',
       setland: false,
       setbuilding: false,
@@ -58,11 +59,11 @@ export default class Home extends React.Component {
     };
   }
 
-   getData_ = async () => {
+  getData_ = async () => {
     try {
       const jsonValue = await AsyncStorage.getItem('@storage_Key');
       // return jsonValue != null ? JSON.parse(jsonValue) : null;
-      this.setState({setData2:JSON.parse(jsonValue)});
+      this.setState({setData2: JSON.parse(jsonValue)});
       // console.log(data2);
 
       fetch('https://ubuntusx.com/mobipharm/userProfile.php', {
@@ -79,7 +80,7 @@ export default class Home extends React.Component {
       })
         .then(response => response.json())
         .then(responseJson => {
-          this.state({setData3:responseJson});
+          this.state({setData3: responseJson});
           // responseJson.forEach(data => {
           //   setuser_id(data.id);
           //   setuser_role(data.role);
@@ -153,8 +154,7 @@ export default class Home extends React.Component {
       })
       .finally(() => this.setState({loading: false}));
 
-this.getData_();
-
+    this.getData_();
   }
   call = item => {
     const args = {
@@ -186,12 +186,11 @@ this.getData_();
       var unique = cart.filter((v, i, a) => a.indexOf(v) === i);
       // console.log(unique);
       this.setState({products: unique});
-      if(items.length==0){
-items=this.state.products;
+      // if (items.length == 0) {
+      //   items = this.state.products;
 
-this.setState({added_products:items})
-
-      }
+      //   this.setState({added_products: items});
+      // }
       cart_price.push(parseInt(item.price));
       var unique_ = cart_price.filter((v, i, a) => a.indexOf(v) === i);
       // console.log(unique_);
@@ -208,22 +207,21 @@ this.setState({added_products:items})
       this.setState({prices: merged});
       // console.log(
       //   merged.reduce((a, b) => a + b)
-     this.setState({total: this.state.prices.reduce((a, b) => a + b, 0),}) 
+      this.setState({total: this.state.prices.reduce((a, b) => a + b, 0)});
 
       // )
     } else {
       cart = this.state.products;
-      console.log(cart)
+      console.log(cart);
       cart.push(item.id);
       var unique = cart.filter((v, i, a) => a.indexOf(v) === i);
       // console.log(unique);
       this.setState({products: unique});
-      if(items.length==0){
-        items=this.state.products;
-        
-        this.setState({added_products:items})
-        
-              }
+      // if (items.length == 0) {
+      //   items = this.state.products;
+
+      //   this.setState({added_products: items});
+      // }
       cart_price.push(parseInt(item.price));
       var unique_ = cart_price.filter((v, i, a) => a.indexOf(v) === i);
       // console.log(unique_);
@@ -237,7 +235,7 @@ this.setState({added_products:items})
       );
       var merged = [].concat.apply([], prod);
       this.setState({prices: merged});
-      this.setState({total: merged.reduce((a, b) => a + b, 0),}) 
+      this.setState({total: merged.reduce((a, b) => a + b, 0)});
 
       // console.log(
       //   merged.reduce((a, b) => a + b)
@@ -272,30 +270,78 @@ this.setState({added_products:items})
     });
   };
   remove = e => {
-    // console.log(e.price);
+    console.log(e.price);
     // this.s
-
+    // console.log(this.state.prices)
     var array2 = [...this.state.prices]; // make a separate copy of the array2
     var index2 = array2.indexOf(e.price);
     if (index2 !== -1) {
       array2.splice(index2, 1);
       this.setState({prices: array2});
     }
-    console.log(this.state.prices);
+    // console.log(array2) ;
     var array = [...this.state.products]; // make a separate copy of the array
     var index = array.indexOf(e.id);
     if (index !== -1) {
       array.splice(index, 1);
       this.setState({products: array});
     }
-      let prod;
-    prod = this.state.products.map(ids =>
-      this.state.data
-        .filter(item => item.id == ids)
-        .map(product => parseInt(product.price)),
-    );
-   let new_total=this.state.total - e.price;
-   this.setState({total:new_total});
+    if (
+      this.state.products.length > 0 &&
+      this.state.added_products.length > 0
+    ) {
+      let checker = (arr, target) => target.every(v => arr.includes(v));
+
+      // console.log(checker(merged, this.state.prices));
+      if (checker(this.state.added_products, this.state.products)) {
+        const new_addeed = this.state.added_products.filter(function (x) {
+          return x !== e.id;
+        });
+        let prod;
+        prod = new_addeed.map(ids =>
+          this.state.data
+            .filter(item => item.id == ids)
+            .map(product => parseInt(product.price)),
+        );
+
+        var merged = [].concat.apply([], prod);
+        this.setState({
+          prices: merged,
+          total: merged.reduce((a, b) => a + b, 0),
+          added_products: new_addeed,
+        });
+        // console.log(merged);
+        // console.log(this.state.prices);
+        // console.log(this.state.added_products);
+        // console.log(new_addeed);
+      }else{
+        let prod;
+        prod = this.state.products.map(ids =>
+          this.state.data
+            .filter(item => item.id == ids)
+            .map(product => parseInt(product.price)),
+        );
+
+        var merged = [].concat.apply([], prod);
+        this.setState({
+          prices: merged,
+          total: merged.reduce((a, b) => a + b, 0),
+          added_products: [],
+        });
+      }
+    }
+
+    //     let prod;
+    //     prod = this.state.products.map(ids =>
+    //       this.state.data
+    //         .filter(item => item.id == ids)
+    //         .map(product => parseInt(product.price)),
+    //     );
+
+    //     var merged = [].concat.apply([], prod);
+    // // console.log(merged)
+    //     let new_total = this.state.total - e.price;
+    //     this.setState({total: new_total});
   };
   renderHeader = () => {
     return (
@@ -374,115 +420,149 @@ this.setState({added_products:items})
     );
   };
 
-  add=(product)=>{
+  add = product => {
     if (items.length == 0) {
+      console.log(`items ${items.length}`)
+      items.push(product.id);
+      var unique = this.state.added_products.filter(
+        (v, i, a) => a.indexOf(v) === i,
+      );
+      // console.log(unique);
+      this.setState({added_products: items});
+      let prod;
+      prod = this.state.added_products.map(ids =>
+        this.state.data
+          .filter(item => item.id == ids)
+          .map(product => parseInt(product.price)),
+      );
 
-   items.push(product.id);
-    var unique = this.state.added_products.filter((v, i, a) => a.indexOf(v) === i);
-    // console.log(unique);
-    this.setState({added_products: items});
+      var merged = [].concat.apply([], prod);
+      // console.log(`added_prodeucts ${merged}`)
+      // console.log(`prices ${this.state.prices}`)
+
+      if (merged.length > 0) {
+        let checker = (arr, target) => target.every(v => arr.includes(v));
+
+        // console.log(checker(merged, this.state.prices));
+        if (checker(merged, this.state.prices)) {
+          this.setState({
+            prices: merged,
+            total: merged.reduce((a, b) => a + b, 0),
+          });
+        } else {
+          // console.log(merged.includes(parseInt(product.price)));
+          // console.log(this.state.prices.includes(parseInt(product.price)));
+          if (
+            merged.includes(parseInt(product.price)) &&
+            this.state.prices.includes(parseInt(product.price))
+          ) {
+            const index = this.state.prices.indexOf(product.price);
+            if (index > -1) {
+              this.setState({prices: this.state.prices.splice(index, 1)});
+            }
+
+            var new_array = merged.concat(this.state.prices);
+            this.setState({
+              prices: new_array,
+              total: new_array.reduce((a, b) => a + b, 0),
+            });
+            // console.log(new_array);
+          }
+        }
+      }
+      // var myArray = this.state.added_products.filter( function( el ) {
+      //   return this.state.prices.indexOf( el ) < 0;
+      // } );
+      // console.log(`new array ${myArray}`);
+    } else {
+      console.log(`items ${items.length}`)
+
+      items = this.state.added_products;
+console.log(items);
+      items.push(product.id);
+      var unique = this.state.added_products.filter(
+        (v, i, a) => a.indexOf(v) === i,
+      );
+      // console.log(unique);
+      this.setState({added_products: items});
+      let prod;
+      prod = this.state.added_products.map(ids =>
+        this.state.data
+          .filter(item => item.id == ids)
+          .map(product => parseInt(product.price)),
+      );
+
+      var merged = [].concat.apply([], prod);
+      // var merged = [].concat.apply([], prod);
+      // console.log(`added_prodeucts ${merged}`)
+      // console.log(`prices ${this.state.prices}`)
+
+      if (merged.length > 0) {
+        let checker = (arr, target) => target.every(v => arr.includes(v));
+
+        // console.log(checker(merged, this.state.prices));
+        if (checker(merged, this.state.prices)) {
+          this.setState({
+            prices: merged,
+            total: merged.reduce((a, b) => a + b, 0),
+          });
+        } else {
+          // console.log(merged.includes(parseInt(product.price)));
+          // console.log(this.state.prices.includes(parseInt(product.price)));
+          if (
+            merged.includes(parseInt(product.price)) &&
+            this.state.prices.includes(parseInt(product.price))
+          ) {
+            const index = this.state.prices.indexOf(product.price);
+            if (index > -1) {
+              this.setState({prices: this.state.prices.splice(index, 1)});
+            }
+
+            var new_array = merged.concat(this.state.prices);
+            this.setState({
+              prices: new_array,
+              total: new_array.reduce((a, b) => a + b, 0),
+            });
+            // console.log(new_array);
+          }
+        }
+      }
+    }
+  };
+  reduce = product => {
     let prod;
-    prod = this.state.added_products.map(ids =>
+    prod = this.state.products.map(ids =>
       this.state.data
         .filter(item => item.id == ids)
         .map(product => parseInt(product.price)),
     );
 
     var merged = [].concat.apply([], prod);
-    // console.log(`added_prodeucts ${merged}`)
-    // console.log(`prices ${this.state.prices}`)
-    
-    if(merged.length>0){
-      let checker = (arr, target) => target.every(v => arr.includes(v));
 
-// console.log(checker(merged, this.state.prices));
-if(checker(merged, this.state.prices)){
-  this.setState({prices:merged,total:merged.reduce((a, b) => a + b, 0)});
-}else{
-console.log(merged.includes(parseInt(product.price)))
-console.log(this.state.prices.includes(parseInt(product.price)))
-if(merged.includes(parseInt(product.price)) && this.state.prices.includes(parseInt(product.price))){
-  const index = this.state.prices.indexOf(5);
-  if (index > -1) {
-  this.setState({prices:this.state.prices.splice(index, 1)});
-
-  }
-  
-  var new_array=merged.concat(this.state.prices);
-  this.setState({prices:new_array,total:new_array.reduce((a, b) => a + b, 0)});
-  console.log(new_array);
-
-}
-
-}
-
-    }
-    // var myArray = this.state.added_products.filter( function( el ) {
-    //   return this.state.prices.indexOf( el ) < 0;
-    // } );
-    // console.log(`new array ${myArray}`);
-    }else{
-      items = this.state.added_products
-      
-   items.push(product.id);
-   var unique = this.state.added_products.filter((v, i, a) => a.indexOf(v) === i);
-   // console.log(unique);
-   this.setState({added_products: items});
-   let prod;
-    prod = this.state.added_products.map(ids =>
-      this.state.data
-        .filter(item => item.id == ids)
-        .map(product => parseInt(product.price)),
-    );
-
-    var merged = [].concat.apply([], prod);
-    // var merged = [].concat.apply([], prod);
-    // console.log(`added_prodeucts ${merged}`)
-    // console.log(`prices ${this.state.prices}`)
-    
-    
-    if(merged.length>0){
-      let checker = (arr, target) => target.every(v => arr.includes(v));
-
-// console.log(checker(merged, this.state.prices));
-if(checker(merged, this.state.prices)){
-  this.setState({prices:merged,total:merged.reduce((a, b) => a + b, 0)});
-}else{console.log(merged.includes(parseInt(product.price)))
-  console.log(this.state.prices.includes(parseInt(product.price)))
-  if(merged.includes(parseInt(product.price)) && this.state.prices.includes(parseInt(product.price))){
-    const index = this.state.prices.indexOf(5);
-    if (index > -1) {
-    this.setState({prices:this.state.prices.splice(index, 1)});
-  
-    }
-    
-    var new_array=merged.concat(this.state.prices);
-    this.setState({prices:new_array,total:new_array.reduce((a, b) => a + b, 0)});
-    console.log(new_array);
-  
-  }
-  
-}
-
-    }
-    }
-  }
-  reduce=(product)=>{
     var array2 = [...this.state.added_products]; // make a separate copy of the array2
     var index2 = array2.indexOf(product.id);
     if (index2 !== -1) {
       array2.splice(index2, 1);
-      this.setState({added_products: array2});
+      
+      this.setState({
+        added_products: array2,
+        prices:merged,
+        total:
+          this.state.total > merged.reduce((a, b) => a + b, 0)
+            ? this.state.total - product.price
+            : this.state.total,
+      });
     }
-    console.log(this.state.added_products);
-  }
-  checkout=()=>{
-    this.setState({
-      visible:false,
-      checkout:true
-    });
 
-  }
+    // console.log(this.state.added_products);
+    // console.log(this.state.products);
+  };
+  checkout = () => {
+    this.setState({
+      visible: false,
+      checkout: true,
+    });
+  };
   render() {
     return (
       <View style={{flex: 1, marginTop: 10}}>
@@ -500,35 +580,30 @@ if(checker(merged, this.state.prices)){
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
-              if(this.state.added_products.length==0){
-                
-      let prod;
-      prod = this.state.products.map(ids =>
-        this.state.data
-          .filter(item => item.id == ids)
-          .map(product => parseInt(product.price)),
-      );
+              if (this.state.products.length > 0) {
+                if (this.state.added_products.length == 0) {
+                  let prod;
+                  prod = this.state.products.map(ids =>
+                    this.state.data
+                      .filter(item => item.id == ids)
+                      .map(product => parseInt(product.price)),
+                  );
 
-      var merged = [].concat.apply([], prod);
+                  var merged = [].concat.apply([], prod);
+                  this.setState({prices: merged});
 
-      this.setState({prices: merged});
-      // console.log(
-      //   merged.reduce((a, b) => a + b)
-     this.setState({
-      visible: true,
-       
-      total: this.state.prices.reduce((a, b) => a + b, 0),}) 
-                // items=this.state.products;
-                
-                // this.setState({added_products:items})
-                
-                      }else{
-                        
-              this.setState({
-                visible: true,
-                total: this.state.prices.reduce((a, b) => a + b, 0),
-              });
-                      }
+                  this.setState({
+                    visible: true,
+                    // added_products: merged,
+                    total: merged.reduce((a, b) => a + b, 0),
+                  });
+                } else {
+                  this.setState({
+                    visible: true,
+                    // total: this.state.prices.reduce((a, b) => a + b, 0),
+                  });
+                }
+              }
             }}>
             <View>
               <Badge
@@ -609,11 +684,32 @@ if(checker(merged, this.state.prices)){
             <DialogFooter>
               <DialogButton
                 text="CANCEL"
-                onPress={() => this.setState({visible: false})}
+                onPress={() => {
+                   cart = [];
+                   cart_price = [];
+                   items = [];
+                  this.setState({
+                    prices: [],
+                    added_products: [],
+                    products: [],
+                    visible: false,
+                  });
+                }}
               />
               <DialogButton
                 text="OK"
-                onPress={() => this.setState({visible: false})}
+                onPress={() => {
+                  cart = [];
+                  cart_price = [];
+                  items = [];
+                 this.setState({
+                   prices: [],
+                   added_products: [],
+                   products: [],
+                   total:'',
+                   visible: false,
+                 });
+               }}
               />
             </DialogFooter>
           }>
@@ -637,7 +733,7 @@ if(checker(merged, this.state.prices)){
                         key={index}
                         style={{marginBottom: 30, maxWidth: '100%'}}>
                         <View style={styles.buttonsContainer}>
-                          <View style={{marginRight:10}}>
+                          <View style={{marginRight: 10}}>
                             <Image
                               style={{width: 60, height: 70, borderRadius: 50}}
                               source={{
@@ -650,30 +746,33 @@ if(checker(merged, this.state.prices)){
                             <Text>{product.category}</Text>
                             <Text>{product.price}</Text>
                           </View>
-                          <View style={{marginLeft:10}}>
-                            
-                              
-                             <Text style={{fontWeight:'bold'}}>{this.state.added_products.filter(x => x == product.id).length}  items</Text> 
-
-                            
-
+                          <View style={{marginLeft: 10}}>
+                            {this.state.added_products.length != 0 ? (
+                              <Text style={{fontWeight: 'bold'}}>
+                                {
+                                  this.state.added_products.filter(
+                                    x => x == product.id,
+                                  ).length
+                                }{' '}
+                                items
+                              </Text>
+                            ) : null}
                           </View>
                         </View>
                         <View
                           style={{
                             flexDirection: 'row',
                             justifyContent: 'space-around',
-                            marginTop:20
+                            marginTop: 20,
                           }}>
-                          <TouchableOpacity style={styles.smaillbuttons}
-                          onPress={this.add.bind(this,product)}
-                          >
+                          <TouchableOpacity
+                            style={styles.smaillbuttons}
+                            onPress={this.add.bind(this, product)}>
                             <Text style={{fontSize: 20, color: '#fff'}}>+</Text>
                           </TouchableOpacity>
-                          <TouchableOpacity 
-                          onPress={this.reduce.bind(this,product)}
-                          
-                          style={styles.smaillbuttons}>
+                          <TouchableOpacity
+                            onPress={this.reduce.bind(this, product)}
+                            style={styles.smaillbuttons}>
                             <Text style={{fontSize: 20, color: '#fff'}}>-</Text>
                           </TouchableOpacity>
 
@@ -690,20 +789,17 @@ if(checker(merged, this.state.prices)){
                     )),
                 )}
               </ScrollView>
-              <Text>{this.state.total}</Text>
+              <Text>Total Amount: {this.state.total}</Text>
+              <Text>{'\n'}</Text>
               <TouchableOpacity
-              onPress={this.state.checkout}
-              style={[styles.smaillbuttons,{width:70,height:30}]}
-              >
-                <Text style={{color:'#fff'}}>Checkout</Text>
+                onPress={this.state.checkout}
+                style={[styles.smaillbuttons, {width: 70, height: 30}]}>
+                <Text style={{color: '#fff'}}>Checkout</Text>
               </TouchableOpacity>
             </View>
           </DialogContent>
         </Dialog>
 
-
-
-        
         <Dialog
           visible={this.state.checkout}
           height={600}
@@ -730,20 +826,16 @@ if(checker(merged, this.state.prices)){
                 height: 500,
                 maxWidth: '100%',
               }}>
-              <ScrollView>
-                
-              </ScrollView>
+              <ScrollView></ScrollView>
               <Text>{this.state.total}</Text>
               <TouchableOpacity
-              onPress={this.state.checkout}
-              style={[styles.smaillbuttons,{width:70,height:30}]}
-              >
-                <Text style={{color:'#fff'}}>Checkout</Text>
+                onPress={this.state.checkout}
+                style={[styles.smaillbuttons, {width: 70, height: 30}]}>
+                <Text style={{color: '#fff'}}>Checkout</Text>
               </TouchableOpacity>
             </View>
           </DialogContent>
         </Dialog>
-
       </View>
     );
   }
