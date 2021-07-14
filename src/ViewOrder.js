@@ -48,7 +48,8 @@ export default class ViewOrder extends React.Component {
       added_products: [],
       total: '',
       setData2: '',
-      loading: false, disabled: false
+      loading: false,
+      disabled: false,
     };
   }
 
@@ -115,6 +116,8 @@ export default class ViewOrder extends React.Component {
         this.setState({data2: json});
         // setData(json);
         // setisLoading(false);
+        // console.log(this.state.data2);
+
         this.setState({loading: false});
       })
       .catch(error => {
@@ -134,16 +137,12 @@ export default class ViewOrder extends React.Component {
     )
       .then(response => response.json())
       .then(json => {
-        if(json!='No Oders Available'){
-
+        if (json != 'No Oders Available') {
           this.setState({data: json});
-          // setData(json);
-          console.log(json);
-          // setisLoading(false);
           this.setState({loading: false});
-        }else{
+        } else {
           this.setState({data: []});
-console.log(this.state.data);
+          // console.log(this.state.data);
         }
       })
       .catch(error => {
@@ -159,7 +158,7 @@ console.log(this.state.data);
   }
   call = item => {
     const args = {
-      number: item.number,
+      number: item,
       prompt: false,
     };
     call(args).catch(console.error);
@@ -204,70 +203,93 @@ console.log(this.state.data);
     );
   };
   _renderItem = ({item}) => {
-  console.log(item)
+    // console.log(item)
     return (
-      
       <Card style={{width: '100%'}}>
         {this.state.loading ? (
           <ActivityIndicator size="large" animating={true} color="#bc2b78" />
-        ) : (
-          item?
-          <View style={styles.buttonsContainers}>
-            {/* <View style={{marginBottom: 20}}>
-              <Image
-                style={{width: 70, height: 80, borderRadius: 50}}
-                source={{
-                  uri: `http://ubuntusx.com/mobipharm/uploads/${item.image}`,
-                }}
-              />
-            </View> */}
-            <View style={{marginLeft: 40}}>
-              <View style={[styles.buttonsContainers, {marginBottom: 20}]}>
-                <Text style={styles.details}>product:</Text>
-                <Text style={styles.value}>{item.product}</Text>
-              </View>
-              <View style={[styles.buttonsContainers, {marginBottom: 20}]}>
-                <Text style={styles.details}>Quantity:</Text>
-                <Text style={styles.value}>{item.quantity}</Text>
+        ) : item ? (
+          <View>
+            <View style={{alignItems: 'center'}}>
+              <Text style={{fontWeight: 'bold'}}>Product Details</Text>
+              {/* <Text>{'\n'}</Text> */}
+            </View>
+            <View style={[styles.buttonsContainers, {marginBottom: 20}]}>
+              {/* <View style={{marginLeft: 40}}> */}
+              <View style={{marginRight: 10}}>
+                {/* <Text style={styles.details}>product:</Text> */}
+
+                {this.state.data2
+                  .filter(item_ => item_.id == item.product)
+                  .map((pro, key) => (
+                    <Text key={key} style={styles.value}>
+                      product: {pro.item}
+                    </Text>
+                  ))}
+
+                {/* <Text style={styles.details}></Text> */}
+                <Text style={styles.value}>Quantity: {item.quantity}</Text>
+                {/* <Text style={styles.details}>Amount:</Text> */}
+                {this.state.data2
+                  .filter(item_ => item_.id == item.product)
+                  .map((pro, key) => (
+                    <Text key={key} style={styles.value}>
+                      Amount: {pro.price * item.quantity}
+                    </Text>
+                  ))}
               </View>
 
-              <View style={[styles.buttonsContainers, {marginBottom: 20}]}>
-                <Text style={styles.details}>price:</Text>
-                <Text style={styles.value}>{item.price}</Text>
-              </View>
-              
-              <View style={[styles.buttonsContainers, {marginBottom: 20}]}>
-                <Text style={styles.details}>Client:</Text>
-                <Text style={styles.value}>{item.client_name}</Text>
-              </View>
-              
-              <View style={[styles.buttonsContainers, {marginBottom: 20}]}>
-                <Text style={styles.details}>Client phoneNumber:</Text>
-                <Text style={styles.value}>{item.client_phone}</Text>
-              </View>
-              
-              <View style={[styles.buttonsContainers, {marginBottom: 20}]}>
-                <Text style={styles.details}>Client Email:</Text>
-                <Text style={styles.value}>{item.client_email}</Text>
-              </View>
-              
-              <View style={[styles.buttonsContainers, {marginBottom: 20}]}>
-                <Text style={styles.details}>Deliver date:</Text>
-                <Text style={styles.value}>{item.delivery}</Text>
-              </View>
-              
-              <View style={[styles.buttonsContainers, {marginBottom: 20}]}>
-                <Text style={styles.details}>Order date:</Text>
-                <Text style={styles.value}>{item.order_date}</Text>
-              </View>
-              <View style={[styles.buttonsContainers, {marginBottom: 20}]}>
-                <Text style={styles.details}>Location:</Text>
-                <Text style={styles.value}>{item.location}</Text>
+              <View style={{marginRight: 10}}>
+                {/* <Text style={styles.details}></Text> */}
+                <Text style={styles.value}>Deliver date: {item.delivery}</Text>
+                {/* <Text style={styles.details}></Text> */}
+                <Text style={styles.value}>Order date: {item.order_date}</Text>
+
+                {/* <Text style={styles.details}>Location:</Text> */}
+                <Text style={styles.value}>Location: {item.location}</Text>
               </View>
             </View>
-            
-          </View>:null
-        )}
+
+            {/* </View> */}
+            {/* <View style={{marginLeft:10,width: '90%', alignContent:'center',justifyContent:'center'}}> */}
+            <View style={{alignItems: 'center'}}>
+              <Text style={{fontWeight: 'bold'}}>Client Details</Text>
+              {/* <Text>{'\n'}</Text> */}
+            </View>
+            <View style={[styles.buttonsContainers, {marginBottom: 8}]}>
+              <View>
+                <Text style={styles.details}>Client:</Text>
+                <Text style={styles.details}>Client phoneNumber:</Text>
+                <Text style={styles.details}>Client Email:</Text>
+              </View>
+              <View>
+                <Text style={styles.value}>{item.client_name}</Text>
+                <Text style={styles.value}>{item.client_phone}</Text>
+                <Text style={styles.value}>{item.client_email}</Text>
+              </View>
+            </View>
+            <View style={{flexDirection:'row',justifyContent:'flex-end'}}>
+            <TouchableOpacity
+            style={{marginRight:30}}
+            onPress={this.call.bind(this,item.client_phone)}
+            >
+            <Image
+              source={require('./images/phone.png')}
+              style={{width: 30, height: 30}}
+            />
+            </TouchableOpacity>
+            <TouchableOpacity
+            // style={{alignItems:'flex-end'}}
+            // onPress={this.call.bind(this,item.client_phone)}
+            >
+            <Image
+              source={require('./images/email.png')}
+              style={{width: 30, height: 30}}
+            />
+            </TouchableOpacity>
+            </View>
+          </View>
+        ) : null}
 
         {/* </View> */}
       </Card>
@@ -277,47 +299,49 @@ console.log(this.state.data);
   render() {
     return (
       <View style={{flex: 1, marginTop: 10}}>
-        <View style={{flexDirection:'row'}}>
-         <TouchableOpacity
-         onPress={()=>this.props.navigation.goBack()}
-         >
-            <Image source={require('./images/back.png')} 
-             style = {{ width: 30, height: 30 }}
+        <View style={{flexDirection: 'row'}}>
+          <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
+            <Image
+              source={require('./images/back.png')}
+              style={{width: 30, height: 30}}
             />
-            
           </TouchableOpacity>
-          <TouchableOpacity
-         onPress={()=>this.props.navigation.goBack()}
-          
-          >
-            <Text style={{fontSize:20,height:30}}>Back</Text>
+          <TouchableOpacity onPress={() => this.props.navigation.goBack()}>
+            <Text style={{fontSize: 20, height: 30}}>Back</Text>
           </TouchableOpacity>
-         </View>
-         {
-            <View style={{marginBottom: 20}}>
-          {this.state.loading ? (
-            <ActivityIndicator size="large" animating={true} color="#bc2b78" />
-          ) : (
-            this.state.data && this.state.data.length?
-           
-            <View>
-              <FlatList
-              data={this.state.data}
-              renderItem={this._renderItem}
-              keyExtractor={(item, index) => {
-                return index.toString();
-              }}
-              ItemSeparatorComponent={this.renderSeparator}
-              ListHeaderComponent={this.renderHeader}
-            />
-            </View>
-            :<View style={{justifyContent:'center',alignContent:'center',alignItems:'center'}}><Text style={{fontSize:20}}> No Orders Available</Text></View>
-
-          )}
         </View>
-
-         }
-        
+        {
+          <View style={{marginBottom: 20}}>
+            {this.state.loading ? (
+              <ActivityIndicator
+                size="large"
+                animating={true}
+                color="#bc2b78"
+              />
+            ) : this.state.data && this.state.data.length ? (
+              <View>
+                <FlatList
+                  data={this.state.data}
+                  renderItem={this._renderItem}
+                  keyExtractor={(item, index) => {
+                    return index.toString();
+                  }}
+                  ItemSeparatorComponent={this.renderSeparator}
+                  ListHeaderComponent={this.renderHeader}
+                />
+              </View>
+            ) : (
+              <View
+                style={{
+                  justifyContent: 'center',
+                  alignContent: 'center',
+                  alignItems: 'center',
+                }}>
+                <Text style={{fontSize: 20}}> No Orders Available</Text>
+              </View>
+            )}
+          </View>
+        }
       </View>
     );
   }
@@ -352,7 +376,7 @@ const styles = StyleSheet.create({
   buttonsContainers: {
     flexDirection: 'row',
     width: '90%',
-    justifyContent: 'flex-start',
+    justifyContent: 'space-around',
     paddingHorizontal: 0,
     alignItems: 'center',
     marginLeft: 10,
