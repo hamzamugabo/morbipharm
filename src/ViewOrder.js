@@ -48,6 +48,7 @@ export default class ViewOrder extends React.Component {
       added_products: [],
       total: '',
       setData2: '',
+      loading: false, disabled: false
     };
   }
 
@@ -111,7 +112,7 @@ export default class ViewOrder extends React.Component {
     )
       .then(response => response.json())
       .then(json => {
-        this.setState({data: json});
+        this.setState({data2: json});
         // setData(json);
         // setisLoading(false);
         this.setState({loading: false});
@@ -133,10 +134,17 @@ export default class ViewOrder extends React.Component {
     )
       .then(response => response.json())
       .then(json => {
-        this.setState({data: json});
-        // setData(json);
-        // setisLoading(false);
-        this.setState({loading: false});
+        if(json!='No Oders Available'){
+
+          this.setState({data: json});
+          // setData(json);
+          console.log(json);
+          // setisLoading(false);
+          this.setState({loading: false});
+        }else{
+          this.setState({data: []});
+console.log(this.state.data);
+        }
       })
       .catch(error => {
         if (error) {
@@ -146,7 +154,7 @@ export default class ViewOrder extends React.Component {
       })
       .finally(() => this.setState({loading: false}));
 
-    this.getData_();
+    // this.getData_();
     this.all();
   }
   call = item => {
@@ -196,11 +204,14 @@ export default class ViewOrder extends React.Component {
     );
   };
   _renderItem = ({item}) => {
+  console.log(item)
     return (
+      
       <Card style={{width: '100%'}}>
         {this.state.loading ? (
           <ActivityIndicator size="large" animating={true} color="#bc2b78" />
         ) : (
+          item?
           <View style={styles.buttonsContainers}>
             {/* <View style={{marginBottom: 20}}>
               <Image
@@ -255,7 +266,7 @@ export default class ViewOrder extends React.Component {
               </View>
             </View>
             
-          </View>
+          </View>:null
         )}
 
         {/* </View> */}
@@ -266,11 +277,31 @@ export default class ViewOrder extends React.Component {
   render() {
     return (
       <View style={{flex: 1, marginTop: 10}}>
-        <View style={{marginBottom: 200}}>
+        <View style={{flexDirection:'row'}}>
+         <TouchableOpacity
+         onPress={()=>this.props.navigation.goBack()}
+         >
+            <Image source={require('./images/back.png')} 
+             style = {{ width: 30, height: 30 }}
+            />
+            
+          </TouchableOpacity>
+          <TouchableOpacity
+         onPress={()=>this.props.navigation.goBack()}
+          
+          >
+            <Text style={{fontSize:20,height:30}}>Back</Text>
+          </TouchableOpacity>
+         </View>
+         {
+            <View style={{marginBottom: 20}}>
           {this.state.loading ? (
             <ActivityIndicator size="large" animating={true} color="#bc2b78" />
           ) : (
-            <FlatList
+            this.state.data && this.state.data.length?
+           
+            <View>
+              <FlatList
               data={this.state.data}
               renderItem={this._renderItem}
               keyExtractor={(item, index) => {
@@ -279,8 +310,14 @@ export default class ViewOrder extends React.Component {
               ItemSeparatorComponent={this.renderSeparator}
               ListHeaderComponent={this.renderHeader}
             />
+            </View>
+            :<View style={{justifyContent:'center',alignContent:'center',alignItems:'center'}}><Text style={{fontSize:20}}> No Orders Available</Text></View>
+
           )}
         </View>
+
+         }
+        
       </View>
     );
   }

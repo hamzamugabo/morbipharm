@@ -9,13 +9,15 @@ import {
   ScrollView,
   Image,
   TouchableOpacity,
-  TextInput
+  TextInput,
 } from 'react-native';
 // import { Avatar, Badge, Icon, withBadge } from 'react-native-elements'
 import call from 'react-native-phone-call';
 import Card from './Card';
 // import AsyncStorage from '@react-native-community/async-storage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import DatePicker from 'react-native-datepicker';
+import {Picker} from '@react-native-picker/picker';
 
 import Dialog, {
   DialogFooter,
@@ -42,6 +44,7 @@ export default class Home extends React.Component {
       prices: [],
       data: [],
       data2: [],
+      data3: [],
       is_admin: false,
       currentUser: null,
       confirm_agreement: false,
@@ -60,8 +63,8 @@ export default class Home extends React.Component {
       user_uid: '',
       phoneNumber: '',
       value: '',
-      location:'',
-      deliver:'',
+      location: '',
+      deliver: '',
       setland: false,
       setbuilding: false,
       checkout: false,
@@ -73,7 +76,7 @@ export default class Home extends React.Component {
       const jsonValue = await AsyncStorage.getItem('@storage_Key');
       // return jsonValue != null ? JSON.parse(jsonValue) : null;
       this.setState({setData2: JSON.parse(jsonValue)});
-      // console.log(data2);
+      console.log(this.state.setData2.pass);
 
       fetch('https://ubuntusx.com/mobipharm/userProfile.php', {
         method: 'POST',
@@ -89,18 +92,12 @@ export default class Home extends React.Component {
       })
         .then(response => response.json())
         .then(responseJson => {
-          this.state({setData3: responseJson});
-          // responseJson.forEach(data => {
-          //   setuser_id(data.id);
-          //   setuser_role(data.role);
-          // });
-          // console.log(data3);
+          // console.log(responseJson);
 
           async function fetchUser() {
             try {
               const jsonValue = JSON.stringify(responseJson);
               await AsyncStorage.setItem('@userprofile', jsonValue);
-              // console.log(e);
             } catch (e) {
               // saving error
               console.log(e);
@@ -150,10 +147,21 @@ export default class Home extends React.Component {
     )
       .then(response => response.json())
       .then(json => {
-        this.setState({data: json});
+        this.setState({data: json,data3:json});
         // setData(json);
         // setisLoading(false);
         this.setState({loading: false});
+
+        let prod;
+        prod = json.map(product => product.category);
+
+        var merged = [].concat.apply([], prod);
+
+        let uniqueChars = [...new Set(merged)];
+
+        // console.log(uniqueChars);
+
+        this.setState({data2: uniqueChars});
       })
       .catch(error => {
         if (error) {
@@ -354,7 +362,7 @@ export default class Home extends React.Component {
                   width: 60,
                   borderRadius: 10,
                 }}>
-                <Text style={{color: '#fff'}}>Buy</Text>
+                <Text style={{color: '#fff'}}>+ Cart</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -408,17 +416,17 @@ export default class Home extends React.Component {
       checkout: true,
     });
   };
-  confirmm =()=>{
+  confirmm = () => {
     this.setState({
-      visible:false,
-    checkout:false
+      visible: false,
+      checkout: false,
     });
-  alert('order confirmed');
-  }
-  confirm =()=>{
+    alert('order confirmed');
+  };
+  confirm = () => {
     this.setState({
-      visible:false,
-    checkout:false
+      visible: false,
+      checkout: false,
     });
     this.setState({loading: true, disabled: false});
 
@@ -428,67 +436,68 @@ export default class Home extends React.Component {
           if (this.state.phoneNumber != '') {
             if (this.state.location != '') {
               if (this.state.deliver != '') {
-              // if(this.state.confirm_password  == this.state.password){
-              // if (this.state.confirm_agreement == true) {
-              fetch(
-                'http://ubuntusx.com/mobipharm/order.php',
+                // if(this.state.confirm_password  == this.state.password){
+                // if (this.state.confirm_agreement == true) {
+                fetch(
+                  'http://ubuntusx.com/mobipharm/order.php',
 
-                // "http://e-soil-databank.paatsoilclinic.com/sever/register.php",/
-                {
-                  method: 'POST',
-                  headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
+                  // "http://e-soil-databank.paatsoilclinic.com/sever/register.php",/
+                  {
+                    method: 'POST',
+                    headers: {
+                      Accept: 'application/json',
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                      fname: this.state.fname,
+                      lname: this.state.lname,
+                      email: this.state.email,
+
+                      location: this.state.location,
+                      deliver: this.state.deliver,
+                      phoneNumber: this.state.phoneNumber,
+                      product: this.state.products,
+                      price: this.state.total,
+                    }),
                   },
-                  body: JSON.stringify({
-                    fname: this.state.fname,
-                    lname: this.state.lname,
-                    email: this.state.email,
+                )
+                  .then(response => response.json())
+                  .then(responseJson => {
+                    // If server response message same as Data Matched
+                    if (responseJson === 'order successful') {
+                      //Then open Profile activity and send user email to profile activity.
+                      alert('order successful');
 
-                    location: this.state.location,
-                    deliver: this.state.deliver,
-                    phoneNumber: this.state.phoneNumber,
-                    product:this.state.products,
-                    price:this.state.total
-                  }),
-                },
-              )
-                .then(response => response.json())
-                .then(responseJson => {
-                  // If server response message same as Data Matched
-                  if (responseJson === 'order successful') {
-                    //Then open Profile activity and send user email to profile activity.
-                alert('order successful');
+                      // this.props.navigation.navigate('Login');
+                      this.setState({
+                        loading: false,
+                        disabled: false,
+                        total: '',
+                        products: [],
+                      });
 
-                    // this.props.navigation.navigate('Login');
-                    this.setState({loading: false, disabled: false,
-                    total:'',
-                    products:[],
+                      // return navigation.navigate('Login');
+                      // Alert.alert('data matched');
+                    } else {
+                      console.log(responseJson);
+                      // Alert.alert(responseJson);
+                    }
 
-                    });
+                    this.setState({loading: false, disabled: false});
+                  })
+                  .catch(error => {
+                    console.error(error);
+                    this.setState({loading: false, disabled: false});
+                  });
 
-                    // return navigation.navigate('Login');
-                    // Alert.alert('data matched');
-                  } else {
-                    console.log(responseJson);
-                    // Alert.alert(responseJson);
-                  }
-
-                  this.setState({loading: false, disabled: false});
-                })
-                .catch(error => {
-                  console.error(error);
-                  this.setState({loading: false, disabled: false});
-                });
-
-              // }else{alert('agree to terms first')}
-              // }else{alert('passwords not matching')}
+                // }else{alert('agree to terms first')}
+                // }else{alert('passwords not matching')}
+              } else {
+                alert(' Date to deliver');
+              }
             } else {
-              alert(' Date to deliver');
+              alert('Enter Location');
             }
-          } else {
-            alert('Enter Location');
-          }
           } else {
             alert('Enter phone number');
           }
@@ -501,7 +510,7 @@ export default class Home extends React.Component {
     } else {
       alert('Enter First Name');
     }
-  }
+  };
   render() {
     return (
       <View style={{flex: 1, marginTop: 10}}>
@@ -567,7 +576,7 @@ export default class Home extends React.Component {
           <View style={{borderBottomColor: 'orange', padding: 10}}>
             <TouchableHighlight
               onPress={this.all}
-              style={[styles.buttonContainer, styles.loginButton, {height: 30}]}
+              // style={[styles.buttonContainer, styles.loginButton, {height: 30}]}
               // onPress={this.searchFilterFunction}
 
               // onPress={this.all}
@@ -576,19 +585,21 @@ export default class Home extends React.Component {
             </TouchableHighlight>
           </View>
           <View style={{borderBottomColor: 'orange', padding: 10}}>
-            <TouchableHighlight
-              onPress={() => this.setState({setland: true, setbuilding: false})}
-              style={[
-                styles.buttonContainer,
-                styles.loginButton,
-                {width: 90, height: 30},
-              ]}
-              // onPress={this.searchFilterFunction}
-
-              // onPress={this.all}
+            <Picker
+              selectedValue={this.state.category}
+              style={{height: 50, width: 250}}
+              onValueChange={(itemValue, itemIndex) =>{
+                this.setState({category:itemValue})
+this.searchFilterFunction(itemValue);
+              }
+              }
             >
-              <Text style={styles.loginText}>Category</Text>
-            </TouchableHighlight>
+              <Picker.Item label="Select category.." value="" />
+
+              {this.state.data2.map((cat, ind) => (
+                <Picker.Item key={ind} label={cat} value={cat} />
+              ))}
+            </Picker>
           </View>
         </View>
         <View style={{marginBottom: 200}}>
@@ -730,7 +741,7 @@ export default class Home extends React.Component {
                       )),
                   )}
               </ScrollView>
-              <Text>Total Amount: {this.state.total}</Text>
+              <Text>Total Amount: {this.state.total} UGX</Text>
               <Text>{'\n'}</Text>
               <TouchableOpacity
                 onPress={this.checkout}
@@ -768,80 +779,106 @@ export default class Home extends React.Component {
                 maxWidth: '100%',
               }}>
               <ScrollView>
-                <View style={{marginBottom: 30,marginTop:50,  maxWidth: '100%'}}>
-                <View style={styles.inputContainer}>
-                <TextInput
-                  underlineColorAndroid="transparent"
-                  placeholder="First Name"
-                  style={styles.inputs}
-                  autoCapitalize="none"
-                  onChangeText={fname => this.setState({fname})}
-                  value={this.state.fname}
-                />
-              </View>
+                <View
+                  style={{marginBottom: 30, marginTop: 50, maxWidth: '100%'}}>
+                  <View style={styles.inputContainer}>
+                    <TextInput
+                      underlineColorAndroid="transparent"
+                      placeholder="First Name"
+                      style={styles.inputs}
+                      autoCapitalize="none"
+                      onChangeText={fname => this.setState({fname})}
+                      value={this.state.fname}
+                    />
+                  </View>
 
-              <View style={styles.inputContainer}>
-                <TextInput
-                  underlineColorAndroid="transparent"
-                  placeholder="Last Name"
-                  style={styles.inputs}
-                  autoCapitalize="none"
-                  onChangeText={lname => this.setState({lname})}
-                  value={this.state.lname}
-                />
-              </View>
+                  <View style={styles.inputContainer}>
+                    <TextInput
+                      underlineColorAndroid="transparent"
+                      placeholder="Last Name"
+                      style={styles.inputs}
+                      autoCapitalize="none"
+                      onChangeText={lname => this.setState({lname})}
+                      value={this.state.lname}
+                    />
+                  </View>
 
-              <View style={styles.inputContainer}>
-                <TextInput
-                  underlineColorAndroid="transparent"
-                  placeholder="email"
-                  autoCapitalize="none"
-                  keyboardType="email-address"
-                  style={styles.inputs}
-                  onChangeText={text => this.setState({email: text})}
-                />
-              </View>
-              <View style={styles.inputContainer}>
-                <TextInput
-                  underlineColorAndroid="transparent"
-                  placeholder="Phone Number"
-                  autoCapitalize="none"
-                  keyboardType="number-pad"
-                  style={styles.inputs}
-                  onChangeText={text => this.setState({phoneNumber: text})}
-                />
-              </View>
-              <View style={styles.inputContainer}>
-                <TextInput
-                  underlineColorAndroid="transparent"
-                  placeholder="Location"
-                  autoCapitalize="none"
-                  style={styles.inputs}
-                  onChangeText={text => this.setState({location: text})}
-                />
-              </View>
-              <View style={styles.inputContainer}>
-                <TextInput
+                  <View style={styles.inputContainer}>
+                    <TextInput
+                      underlineColorAndroid="transparent"
+                      placeholder="email"
+                      autoCapitalize="none"
+                      keyboardType="email-address"
+                      style={styles.inputs}
+                      onChangeText={text => this.setState({email: text})}
+                    />
+                  </View>
+                  <View style={styles.inputContainer}>
+                    <TextInput
+                      underlineColorAndroid="transparent"
+                      placeholder="Phone Number"
+                      autoCapitalize="none"
+                      keyboardType="number-pad"
+                      style={styles.inputs}
+                      onChangeText={text => this.setState({phoneNumber: text})}
+                    />
+                  </View>
+                  <View style={styles.inputContainer}>
+                    <TextInput
+                      underlineColorAndroid="transparent"
+                      placeholder="Location"
+                      autoCapitalize="none"
+                      style={styles.inputs}
+                      onChangeText={text => this.setState({location: text})}
+                    />
+                  </View>
+                  <View style={styles.inputContainer}>
+                    <DatePicker
+                      // style={{width: 200, marginBottom: 7}}
+                      style={styles.inputs}
+                      date={this.state.deliver}
+                      mode="date"
+                      placeholder="deliverly date"
+                      format="YYYY-MM-DD"
+                      confirmBtnText="Confirm"
+                      cancelBtnText="Cancel"
+                      customStyles={{
+                        dateIcon: {
+                          position: 'absolute',
+                          left: 0,
+                          top: 4,
+                          marginLeft: 0,
+                        },
+                        dateInput: {
+                          height: 40,
+                          borderWidth: 1,
+                          borderColor: 'transparent',
+                          alignSelf: 'stretch',
+                          fontSize: 16,
+                          marginBottom: 9,
+                        },
+                      }}
+                      onDateChange={deliver => this.setState({deliver})}
+                    />
+                    {/* <TextInput
                   underlineColorAndroid="transparent"
                   placeholder="When to deliver"
                   autoCapitalize="none"
                   style={styles.inputs}
                   onChangeText={text => this.setState({deliver: text})}
-                />
-              </View>
-              {/* <TouchableOpacity
+                /> */}
+                  </View>
+                  {/* <TouchableOpacity
                 onPress={this.confirm}
                 style={[styles.smaillbuttons, {width: 70, height: 30}]}>
                 <Text style={{color: '#fff'}}>Confirm Order</Text>
               </TouchableOpacity> */}
-
-
                 </View>
               </ScrollView>
               <Text>{this.state.total}</Text>
               <TouchableOpacity
                 onPress={this.confirm}
-                style={[styles.smaillbuttons, {width:100,height: 30}]}>
+                style={[styles.smaillbuttons, {width: 100, height: 30}]}>
                 <Text style={{color: '#fff'}}>Confirm Order</Text>
               </TouchableOpacity>
             </View>
@@ -911,6 +948,7 @@ const styles = StyleSheet.create({
     padding: 7,
   },
   loginText: {
-    color: '#58f406',
+    // color: '#58f406',
+    fontSize:16
   },
 });

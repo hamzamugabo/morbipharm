@@ -80,7 +80,7 @@ componentDidMount() {
         >
 
         <Card>
-        <Text>Add Item</Text>
+        <Text>View Orders</Text>
            </Card>
         </TouchableOpacity>
        </View>
