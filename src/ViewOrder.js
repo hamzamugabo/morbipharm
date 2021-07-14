@@ -30,6 +30,8 @@ import {
   Icon,
   withBadge,
 } from 'react-native-elements';
+import email from 'react-native-email'
+
 var cart = [];
 var cart_price = [];
 var items = [];
@@ -52,7 +54,17 @@ export default class ViewOrder extends React.Component {
       disabled: false,
     };
   }
-
+  getListViewItem = (item) => {  
+    // Alert.alert(item.Email);  
+    const to = [item] // string or array of email addresses
+    email(to, {
+        // Optional additional arguments
+        // cc: ['bazzy@moo.com', 'doooo@daaa.com'], // string or array of email addresses
+        // bcc: 'mee@mee.com', // string or array of email addresses
+        subject: 'Add subject',
+        body: 'Some body right here'
+    }).catch(console.error)
+} 
   getData_ = async () => {
     try {
       const jsonValue = await AsyncStorage.getItem('@storage_Key');
@@ -280,7 +292,7 @@ export default class ViewOrder extends React.Component {
             </TouchableOpacity>
             <TouchableOpacity
             // style={{alignItems:'flex-end'}}
-            // onPress={this.call.bind(this,item.client_phone)}
+            onPress={this.getListViewItem.bind(this,item.client_email)}
             >
             <Image
               source={require('./images/email.png')}
