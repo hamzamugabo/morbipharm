@@ -10,6 +10,7 @@ import {
   Image,
   TouchableOpacity,
   TextInput,
+  LogBox
 } from 'react-native';
 // import { Avatar, Badge, Icon, withBadge } from 'react-native-elements'
 import call from 'react-native-phone-call';
@@ -36,6 +37,8 @@ import {
 var cart = [];
 var cart_price = [];
 var items = [];
+LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
+LogBox.ignoreAllLogs();//Ignore all log notifications
 export default class Home extends React.Component {
   constructor() {
     super();
@@ -428,7 +431,7 @@ export default class Home extends React.Component {
     let drug=this.state.products.map(ids =>
       this.state.data
         .filter(item => item.id == ids)
-        .map(product => parseInt(product.item)),
+        .map(product => product.item),
     );
 
     var merged = [].concat.apply([], drug);
@@ -440,7 +443,6 @@ export default class Home extends React.Component {
       ssl: true, //if ssl: false, TLS is enabled,**note:** in iOS TLS/SSL is determined automatically, so either true or false is the same
       username: "testtechpro2@gmail.com",
       password: "Test1.2,3",
-      from: "testtechpro2@gmail.com",
       recipients:this.state.email,
       bcc: ["hamza.mugabo@billbrain.tech"], //completely optional
       subject: "Mobipharm Order",
@@ -479,7 +481,7 @@ export default class Home extends React.Component {
     );
 
     var merged = [].concat.apply([], drug);
-console.log(merged);
+// console.log(merged);
     this.setState({loading: true, disabled: false});
 
     if (this.state.fname != '') {
