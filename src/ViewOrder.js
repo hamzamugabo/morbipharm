@@ -32,9 +32,6 @@ import {
 } from 'react-native-elements';
 import email from 'react-native-email'
 
-var cart = [];
-var cart_price = [];
-var items = [];
 export default class ViewOrder extends React.Component {
   constructor() {
     super();
@@ -55,12 +52,8 @@ export default class ViewOrder extends React.Component {
     };
   }
   getListViewItem = (item) => {  
-    // Alert.alert(item.Email);  
     const to = [item] // string or array of email addresses
     email(to, {
-        // Optional additional arguments
-        // cc: ['bazzy@moo.com', 'doooo@daaa.com'], // string or array of email addresses
-        // bcc: 'mee@mee.com', // string or array of email addresses
         subject: 'Add subject',
         body: 'Some body right here'
     }).catch(console.error)
@@ -87,11 +80,6 @@ export default class ViewOrder extends React.Component {
         .then(response => response.json())
         .then(responseJson => {
           this.state({setData3: responseJson});
-          // responseJson.forEach(data => {
-          //   setuser_id(data.id);
-          //   setuser_role(data.role);
-          // });
-          // console.log(data3);
 
           async function fetchUser() {
             try {
@@ -104,12 +92,9 @@ export default class ViewOrder extends React.Component {
             }
           }
           fetchUser();
-          // this.setState({loading: false, disabled: false});
         })
         .catch(error => {
           console.error(error);
-
-          // this.setState({loading: false, disabled: false});
         });
     } catch (e) {
       // error reading value
@@ -226,29 +211,22 @@ export default class ViewOrder extends React.Component {
               <Text style={{fontWeight: 'bold'}}>Product Details</Text>
               {/* <Text>{'\n'}</Text> */}
             </View>
+            <View style={[styles.buttonsContainers, {marginBottom: 8}]}>
+            
+            <Text  style={styles.value}>
+                      product(s): {item.product}
+                    </Text>
+                  
+            </View>
             <View style={[styles.buttonsContainers, {marginBottom: 20}]}>
               {/* <View style={{marginLeft: 40}}> */}
               <View style={{marginRight: 10}}>
-                {/* <Text style={styles.details}>product:</Text> */}
-
-                {this.state.data2
-                  .filter(item_ => item_.id == item.product)
-                  .map((pro, key) => (
-                    <Text key={key} style={styles.value}>
-                      product: {pro.item}
-                    </Text>
-                  ))}
-
-                {/* <Text style={styles.details}></Text> */}
                 <Text style={styles.value}>Quantity: {item.quantity}</Text>
-                {/* <Text style={styles.details}>Amount:</Text> */}
-                {this.state.data2
-                  .filter(item_ => item_.id == item.product)
-                  .map((pro, key) => (
-                    <Text key={key} style={styles.value}>
-                      Amount: {pro.price * item.quantity}
+                
+                    <Text  style={styles.value}>
+                      Amount: {item.total}
                     </Text>
-                  ))}
+                  
               </View>
 
               <View style={{marginRight: 10}}>
@@ -262,8 +240,6 @@ export default class ViewOrder extends React.Component {
               </View>
             </View>
 
-            {/* </View> */}
-            {/* <View style={{marginLeft:10,width: '90%', alignContent:'center',justifyContent:'center'}}> */}
             <View style={{alignItems: 'center'}}>
               <Text style={{fontWeight: 'bold'}}>Client Details</Text>
               {/* <Text>{'\n'}</Text> */}

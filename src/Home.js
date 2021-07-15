@@ -18,6 +18,7 @@ import Card from './Card';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DatePicker from 'react-native-datepicker';
 import {Picker} from '@react-native-picker/picker';
+import RNSmtpMailer from "react-native-smtp-mailer";
 
 import Dialog, {
   DialogFooter,
@@ -423,11 +424,62 @@ export default class Home extends React.Component {
     });
     alert('order confirmed');
   };
+  handleEmail = () => {
+    let drug=this.state.products.map(ids =>
+      this.state.data
+        .filter(item => item.id == ids)
+        .map(product => parseInt(product.item)),
+    );
+
+    var merged = [].concat.apply([], drug);
+
+    this.setState({ loading: true, disabled: true }, () => {
+    RNSmtpMailer.sendMail({
+      mailhost: "smtp.gmail.com",
+      port: "465",
+      ssl: true, //if ssl: false, TLS is enabled,**note:** in iOS TLS/SSL is determined automatically, so either true or false is the same
+      username: "testtechpro2@gmail.com",
+      password: "Test1.2,3",
+      from: "testtechpro2@gmail.com",
+      recipients:this.state.email,
+      bcc: ["hamza.mugabo@billbrain.tech"], //completely optional
+      subject: "Mobipharm Order",
+      htmlBody: '<h1>Dear '+''+ this.state.fname +''+''+ this.state.lname +'</h1><p>Your order for '+''+merged+' has been confirmed at UGX '+''+this.state.total+'</p>',
+      // attachmentPaths: [
+       
+      // ],
+      // attachmentNames: [
+       
+      // ], //only used in android, these are renames of original files. in ios filenames will be same as specified in path. In ios-only application, leave it empty: attachmentNames:[]
+      // attachmentTypes: ["img", "txt", "csv", "pdf", "zip", "img"] //needed for android, in ios-only application, leave it empty: attachmentTypes:[]. Generally every img(either jpg, png, jpeg or whatever) file should have "img", and every other file should have its corresponding type.
+    })
+      .then(success=> {
+        // If server response message same as Data Matched
+        if (success) {
+          this.setState({ loading: false, disabled: false });
+        } else {
+          
+          this.setState({ loading: false, disabled: false });
+        }
+      })
+      .catch(err => console.log(err));
+  
+    })
+  }
+  
   confirm = () => {
     this.setState({
       visible: false,
       checkout: false,
     });
+    let drug=this.state.products.map(ids =>
+      this.state.data
+        .filter(item => item.id == ids)
+        .map(product => product.item),
+    );
+
+    var merged = [].concat.apply([], drug);
+console.log(merged);
     this.setState({loading: true, disabled: false});
 
     if (this.state.fname != '') {
@@ -457,6 +509,7 @@ export default class Home extends React.Component {
                       deliver: this.state.deliver,
                       phoneNumber: this.state.phoneNumber,
                       product: this.state.products,
+                      products: merged,
                       price: this.state.total,
                     }),
                   },
@@ -466,6 +519,7 @@ export default class Home extends React.Component {
                     // If server response message same as Data Matched
                     if (responseJson === 'order successful') {
                       //Then open Profile activity and send user email to profile activity.
+                      this.handleEmail();
                       alert('order successful');
 
                       // this.props.navigation.navigate('Login');
@@ -617,15 +671,6 @@ this.searchFilterFunction(itemValue);
             />
           )}
         </View>
-        {/* <FlatList
-              data={this.state.data}
-              renderItem={this._renderItem}
-              keyExtractor={(item, index) => {
-                return index.toString();
-              }}
-              ItemSeparatorComponent={this.renderSeparator}
-              // ListHeaderComponent={this.header}
-            /> */}
 
         <Dialog
           visible={this.state.visible}
