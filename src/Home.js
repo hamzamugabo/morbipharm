@@ -10,7 +10,7 @@ import {
   Image,
   TouchableOpacity,
   TextInput,
-  LogBox
+  LogBox,
 } from 'react-native';
 // import { Avatar, Badge, Icon, withBadge } from 'react-native-elements'
 import call from 'react-native-phone-call';
@@ -19,7 +19,7 @@ import Card from './Card';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DatePicker from 'react-native-datepicker';
 import {Picker} from '@react-native-picker/picker';
-import RNSmtpMailer from "react-native-smtp-mailer";
+import RNSmtpMailer from 'react-native-smtp-mailer';
 
 import Dialog, {
   DialogFooter,
@@ -38,18 +38,20 @@ var cart = [];
 var cart_price = [];
 var items = [];
 LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
-LogBox.ignoreAllLogs();//Ignore all log notifications
+LogBox.ignoreAllLogs(); //Ignore all log notifications
 export default class Home extends React.Component {
   constructor() {
     super();
 
     this.state = {
+      value: '',
+    client:'',
       products: [],
       prices: [],
       data: [],
       data2: [],
       data3: [],
-      order:'',
+      order: '',
       is_admin: false,
       currentUser: null,
       confirm_agreement: false,
@@ -81,7 +83,7 @@ export default class Home extends React.Component {
       const jsonValue = await AsyncStorage.getItem('@storage_Key');
       // return jsonValue != null ? JSON.parse(jsonValue) : null;
       this.setState({setData2: JSON.parse(jsonValue)});
-      console.log(this.state.setData2.pass);
+      // console.log(this.state.setData2.pass);
 
       fetch('https://ubuntusx.com/mobipharm/userProfile.php', {
         method: 'POST',
@@ -152,7 +154,7 @@ export default class Home extends React.Component {
     )
       .then(response => response.json())
       .then(json => {
-        this.setState({data: json,data3:json});
+        this.setState({data: json, data3: json});
         // setData(json);
         // setisLoading(false);
         this.setState({loading: false});
@@ -177,6 +179,12 @@ export default class Home extends React.Component {
       .finally(() => this.setState({loading: false}));
 
     this.getData_();
+    this.client_();
+
+  //   if (typeof this.state.client != "undefined") {
+      console.log(this.state.client);
+  //  }
+
   }
   call = item => {
     const args = {
@@ -203,7 +211,7 @@ export default class Home extends React.Component {
       cart.push(item.id);
       var unique = cart.filter((v, i, a) => a.indexOf(v) === i);
       // console.log(unique);
-      this.setState({products: unique});  
+      this.setState({products: unique});
       cart_price.push(parseInt(item.price));
       let prod;
       prod = this.state.products.map(ids =>
@@ -227,7 +235,7 @@ export default class Home extends React.Component {
       var unique = cart.filter((v, i, a) => a.indexOf(v) === i);
       // console.log(unique);
       this.setState({products: unique});
-      
+
       cart_price.push(parseInt(item.price));
       let prod;
       prod = this.state.products.map(ids =>
@@ -238,7 +246,6 @@ export default class Home extends React.Component {
       var merged = [].concat.apply([], prod);
       this.setState({prices: merged});
       this.setState({total: merged.reduce((a, b) => a + b, 0)});
-
     }
   };
   renderSeparator = () => {
@@ -406,161 +413,226 @@ export default class Home extends React.Component {
     alert('order confirmed');
   };
   getOccurrence(array, value) {
-    return array.filter((v) => (v === value)).length;
-}
+    return array.filter(v => v === value).length;
+  }
   handleEmail = () => {
-    let drug=this.state.products.map(ids =>
+    let drug = this.state.products.map(ids =>
       this.state.data
         .filter(item => item.id == ids)
         .map(product => product.item),
     );
 
     var merged = [].concat.apply([], drug);
-    
+
     var unique = merged.filter((v, i, a) => a.indexOf(v) === i);
- var orders=  unique.map((prod) => (
-    // console.log(prod);
-   prod+' '+this.getOccurrence(merged, prod)
-   ));
-  
-    this.setState({ loading: true, disabled: true }, () => {
-    RNSmtpMailer.sendMail({
-      mailhost: "smtp.gmail.com",
-      port: "465",
-      ssl: true, //if ssl: false, TLS is enabled,**note:** in iOS TLS/SSL is determined automatically, so either true or false is the same
-      username: "submissions.mobile.tax.returns@gmail.com",
-      password: "vltmvjkeiincasgr",
-      recipients:this.state.email,
-      bcc: ["hamza.mugabo@billbrain.tech"], //completely optional
-      subject: "Mobipharm Order",
-      htmlBody: '<h1>Dear '+''+ this.state.fname +' '+' '+ this.state.lname +'</h1><p>Your order for '+''+orders+' has been confirmed at UGX '+''+this.state.total+'</p>',
-    })
-      .then(success=> {
-        // If server response message same as Data Matched
-        if (success) {
-          this.setState({ loading: false, disabled: false });
-        } else {
-          
-          this.setState({ loading: false, disabled: false });
-        }
+    var orders = unique.map(
+      prod =>
+        // console.log(prod);
+        prod + ' ' + this.getOccurrence(merged, prod),
+    );
+
+    this.setState({loading: true, disabled: true}, () => {
+      RNSmtpMailer.sendMail({
+        mailhost: 'smtp.gmail.com',
+        port: '465',
+        ssl: true, //if ssl: false, TLS is enabled,**note:** in iOS TLS/SSL is determined automatically, so either true or false is the same
+        username: 'submissions.mobile.tax.returns@gmail.com',
+        password: 'vltmvjkeiincasgr',
+        recipients: this.state.email,
+        bcc: ['hamza.mugabo@billbrain.tech'], //completely optional
+        subject: 'Mobipharm Order',
+        htmlBody:
+          '<h1>Dear ' +
+          '' +
+          this.state.fname +
+          ' ' +
+          ' ' +
+          this.state.lname +
+          '</h1><p>Your order for ' +
+          '' +
+          orders +
+          ' has been confirmed at UGX ' +
+          '' +
+          this.state.total +
+          '</p>',
       })
-      .catch(err => console.log(err));
-  
-    })
-  }
-  
+        .then(success => {
+          // If server response message same as Data Matched
+          if (success) {
+            this.setState({loading: false, disabled: false});
+          } else {
+            this.setState({loading: false, disabled: false});
+          }
+        })
+        .catch(err => console.log(err));
+    });
+  };
+  client_ = async () => {
+    try {
+      const jsonValue = await AsyncStorage.getItem('@client');
+      // return jsonValue != null ? JSON.parse(jsonValue) : null;
+      this.setState({client:JSON.parse(jsonValue)});
+      console.log(this.state.client)
+    } catch (e) {
+      // error reading value
+      console.log(e);
+    }
+  };
+  storeData = async () => {
+    let obj = {
+      name: this.state.fname,
+      lname: this.state.lname,
+      email: this.state.email,
+      location: this.state.location,
+      phoneNumber: this.state.phoneNumber,
+    };
+    try {
+      const jsonValue = JSON.stringify(obj);
+      await AsyncStorage.setItem('@client', jsonValue);
+      // alert(e);
+    } catch (e) {
+      // saving error
+      alert(e);
+    }
+  };
   confirm = () => {
     this.setState({
       visible: false,
       checkout: false,
     });
 
-    let drug=this.state.products.map(ids =>
+    let drug = this.state.products.map(ids =>
       this.state.data
         .filter(item => item.id == ids)
         .map(product => product.item),
     );
 
     var merged = [].concat.apply([], drug);
-    
-    var unique = merged.filter((v, i, a) => a.indexOf(v) === i);
- var orders=  unique.map((prod) => (
-    // console.log(prod);
-   prod+' '+this.getOccurrence(merged, prod)
-   ));
 
+    var unique = merged.filter((v, i, a) => a.indexOf(v) === i);
+    var orders = unique.map(
+      prod =>
+        // console.log(prod);
+        prod + ' ' + this.getOccurrence(merged, prod),
+    );
+
+
+    if(
+      this.state.client
+      ){
+      console.log('client data saved');
+    }else{
     this.setState({loading: true, disabled: false});
 
-    if (this.state.fname != '') {
-      if (this.state.lname != '') {
-        if (this.state.email != '') {
-          if (this.state.phoneNumber != '') {
-            if (this.state.location != '') {
-              if (this.state.deliver != '') {
-                // if(this.state.confirm_password  == this.state.password){
-                // if (this.state.confirm_agreement == true) {
-                fetch(
-                  'http://ubuntusx.com/mobipharm/order.php',
-
-                  // "http://e-soil-databank.paatsoilclinic.com/sever/register.php",/
-                  {
-                    method: 'POST',
-                    headers: {
-                      Accept: 'application/json',
-                      'Content-Type': 'application/json',
+      if (this.state.fname != '') {
+        if (this.state.lname != '') {
+          if (this.state.email != '') {
+            if (this.state.phoneNumber != '') {
+              if (this.state.location != '') {
+                if (this.state.deliver != '') {
+                  // if(this.state.confirm_password  == this.state.password){
+                  // if (this.state.confirm_agreement == true) {
+                  fetch(
+                    'http://ubuntusx.com/mobipharm/order.php',
+  
+                    // "http://e-soil-databank.paatsoilclinic.com/sever/register.php",/
+                    {
+                      method: 'POST',
+                      headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json',
+                      },
+                      body: JSON.stringify({
+                        fname: this.state.fname,
+                        lname: this.state.lname,
+                        email: this.state.email,
+  
+                        location: this.state.location,
+                        deliver: this.state.deliver,
+                        phoneNumber: this.state.phoneNumber,
+                        product: this.state.products,
+                        products: orders,
+                        price: this.state.total,
+                      }),
                     },
-                    body: JSON.stringify({
-                      fname: this.state.fname,
-                      lname: this.state.lname,
-                      email: this.state.email,
-
-                      location: this.state.location,
-                      deliver: this.state.deliver,
-                      phoneNumber: this.state.phoneNumber,
-                      product: this.state.products,
-                      products: orders,
-                      price: this.state.total,
-                    }),
-                  },
-                )
-                  .then(response => response.json())
-                  .then(responseJson => {
-                    // If server response message same as Data Matched
-                    if (responseJson === 'order successful') {
-                      //Then open Profile activity and send user email to profile activity.
-                      this.handleEmail();
-                      alert('order successful');
-
-                      // this.props.navigation.navigate('Login');
-                      this.setState({
-                        loading: false,
-                        disabled: false,
-                        total: '',
-                        products: [],
-                      });
-
-                      // return navigation.navigate('Login');
-                      // Alert.alert('data matched');
-                    } else {
-                      console.log(responseJson);
-                      this.setState({
-                        loading: false,
-                        disabled: false,
-                        total: '',
-                        products: [],
-                      });
-                      // Alert.alert(responseJson);
-                    }
-
-                    this.setState({loading: false, disabled: false});
-                  })
-                  .catch(error => {
-                    console.error(error);
-                    this.setState({loading: false, disabled: false});
-                  });
-
-                // }else{alert('agree to terms first')}
-                // }else{alert('passwords not matching')}
+                  )
+                    .then(response => response.json())
+                    .then(responseJson => {
+                      // If server response message same as Data Matched
+                      if (responseJson === 'order successful') {
+                        //Then open Profile activity and send user email to profile activity.
+                        this.handleEmail();
+                        this.storeData();
+                        alert('order successful');
+  
+                        // this.props.navigation.navigate('Login');
+                        this.setState({
+                          loading: false,
+                          disabled: false,
+                          total: '',
+                          products: [],
+                        });
+  
+                        // return navigation.navigate('Login');
+                        // Alert.alert('data matched');
+                      } else {
+                        console.log(responseJson);
+                        this.setState({
+                          loading: false,
+                          disabled: false,
+                          total: '',
+                          products: [],
+                        });
+                        // Alert.alert(responseJson);
+                      }
+  
+                      this.setState({loading: false, disabled: false});
+                    })
+                    .catch(error => {
+                      console.error(error);
+                      this.setState({loading: false, disabled: false});
+                    });
+  
+                  // }else{alert('agree to terms first')}
+                  // }else{alert('passwords not matching')}
+                } else {
+                  alert(' Date to deliver');
+                }
               } else {
-                alert(' Date to deliver');
+                alert('Enter Location');
               }
             } else {
-              alert('Enter Location');
+              alert('Enter phone number');
             }
           } else {
-            alert('Enter phone number');
+            alert('Enter email');
           }
         } else {
-          alert('Enter email');
+          alert('Enter Last Name');
         }
       } else {
-        alert('Enter Last Name');
+        alert('Enter First Name');
       }
-    } else {
-      alert('Enter First Name');
     }
+    
   };
   render() {
+    const options = [
+      {
+        key: 'Mobile Money',
+        text: 'Mobile Money',
+      },
+      {
+        key: 'Visa/Card Enabled',
+        text: 'Visa/Card Enabled',
+      },
+      {
+        key: 'Cash on dispatch	',
+        text: 'Cash on dispatch	',
+      },
+    ];
+    const {value} = this.state;
+
     return (
       <View style={{flex: 1, marginTop: 10}}>
         <View style={[styles.buttonsContainer, {margin: 15}]}>
@@ -637,12 +709,10 @@ export default class Home extends React.Component {
             <Picker
               selectedValue={this.state.category}
               style={{height: 50, width: 250}}
-              onValueChange={(itemValue, itemIndex) =>{
-                this.setState({category:itemValue})
-this.searchFilterFunction(itemValue);
-              }
-              }
-            >
+              onValueChange={(itemValue, itemIndex) => {
+                this.setState({category: itemValue});
+                this.searchFilterFunction(itemValue);
+              }}>
               <Picker.Item label="Select category.." value="" />
 
               {this.state.data2.map((cat, ind) => (
@@ -704,9 +774,9 @@ this.searchFilterFunction(itemValue);
                 justifyContent: 'center',
                 alignItems: 'center',
                 height: 500,
-                maxWidth: '100%',
+                // maxWidth: '120%',
               }}>
-              <ScrollView>
+              <ScrollView style={{backgroundColor: '#FFF8DC'}}>
                 {this.state.products
                   .filter((v, i, a) => a.indexOf(v) === i)
                   .map(product_id =>
@@ -781,13 +851,35 @@ this.searchFilterFunction(itemValue);
                       )),
                   )}
               </ScrollView>
-              <Text>Total Amount: {this.state.total} UGX</Text>
-              <Text>{'\n'}</Text>
-              <TouchableOpacity
-                onPress={this.checkout}
-                style={[styles.smaillbuttons, {width: 70, height: 30}]}>
-                <Text style={{color: '#fff'}}>Checkout</Text>
-              </TouchableOpacity>
+              <View>
+                {options.map(item => {
+                  return (
+                    <View key={item.key} style={styles.bbuttonContainer}>
+                      <Text>{item.text}</Text>
+                      <TouchableOpacity
+                        style={styles.circle}
+                        onPress={() => {
+                          this.setState({
+                            value: item.key,
+                          });
+                        }}>
+                        {value === item.key && (
+                          <View style={styles.checkedCircle} />
+                        )}
+                      </TouchableOpacity>
+                    </View>
+                  );
+                })}
+                <Text style={{fontWeight: 'bold'}}>
+                  Total Amount: {this.state.total} UGX
+                </Text>
+
+                <TouchableOpacity
+                  onPress={this.checkout}
+                  style={[styles.smaillbuttons, {width: 70, height: 30}]}>
+                  <Text style={{color: '#fff'}}>Checkout</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </DialogContent>
         </Dialog>
@@ -801,10 +893,7 @@ this.searchFilterFunction(itemValue);
                 text="CANCEL"
                 onPress={() => this.setState({checkout: false})}
               />
-              <DialogButton
-                text="OK"
-                onPress={() => this.setState({checkout: false})}
-              />
+              <DialogButton text="OK" onPress={() => this.confirm()} />
             </DialogFooter>
           }>
           <DialogContent>
@@ -819,7 +908,44 @@ this.searchFilterFunction(itemValue);
                 maxWidth: '100%',
               }}>
               <ScrollView>
-                <View
+                {
+      this.state.client?
+      <View style={styles.inputContainer}>
+                    <DatePicker
+                      // style={{width: 200, marginBottom: 7}}
+                      style={styles.inputs}
+                      date={this.state.deliver}
+                      mode="date"
+                      placeholder="deliverly date"
+                      format="YYYY-MM-DD"
+                      confirmBtnText="Confirm"
+                      cancelBtnText="Cancel"
+                      customStyles={{
+                        dateIcon: {
+                          position: 'absolute',
+                          left: 0,
+                          top: 4,
+                          marginLeft: 0,
+                        },
+                        dateInput: {
+                          height: 40,
+                          borderWidth: 1,
+                          borderColor: 'transparent',
+                          alignSelf: 'stretch',
+                          fontSize: 16,
+                          marginBottom: 9,
+                          
+                        },
+                        placeholderText:{
+                          color:'black'
+                        }
+                      }}
+                      onDateChange={deliver => this.setState({deliver})}
+                    />
+                    
+                  </View>:
+
+<View
                   style={{marginBottom: 30, marginTop: 50, maxWidth: '100%'}}>
                   <View style={styles.inputContainer}>
                     <TextInput
@@ -896,24 +1022,21 @@ this.searchFilterFunction(itemValue);
                           alignSelf: 'stretch',
                           fontSize: 16,
                           marginBottom: 9,
+                          backgroundColor:'white'
                         },
+                        placeholderText:{
+                          color:'black'
+                        }
                       }}
                       onDateChange={deliver => this.setState({deliver})}
                     />
-                    {/* <TextInput
-                  underlineColorAndroid="transparent"
-                  placeholder="When to deliver"
-                  autoCapitalize="none"
-                  style={styles.inputs}
-                  onChangeText={text => this.setState({deliver: text})}
-                /> */}
+                    
                   </View>
-                  {/* <TouchableOpacity
-                onPress={this.confirm}
-                style={[styles.smaillbuttons, {width: 70, height: 30}]}>
-                <Text style={{color: '#fff'}}>Confirm Order</Text>
-              </TouchableOpacity> */}
-                </View>
+                  </View>
+                }
+                
+
+                
               </ScrollView>
               <Text>{this.state.total}</Text>
               <TouchableOpacity
@@ -934,7 +1057,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20,
+    // marginBottom: 10,
     // width: 250,
     backgroundColor: '#ff751a',
     width: 30,
@@ -954,6 +1077,7 @@ const styles = StyleSheet.create({
     marginLeft: 16,
     borderBottomColor: '#FFFFFF',
     flex: 1,
+    color:'black'
   },
   buttonsContainers: {
     flexDirection: 'row',
@@ -983,12 +1107,34 @@ const styles = StyleSheet.create({
     // width: 150,
     borderRadius: 10,
   },
+  bbuttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  circle: {
+    height: 20,
+    width: 20,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#ACACAC',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  checkedCircle: {
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    backgroundColor: '#794F9B',
+  },
   loginButton: {
     backgroundColor: '#000080',
     padding: 7,
   },
   loginText: {
     // color: '#58f406',
-    fontSize:16
+    fontSize: 16,
   },
 });
