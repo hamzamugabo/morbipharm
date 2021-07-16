@@ -182,7 +182,7 @@ export default class Home extends React.Component {
     this.client_();
 
   //   if (typeof this.state.client != "undefined") {
-      console.log(this.state.client);
+      // console.log(this.state.client);
   //  }
 
   }
@@ -230,7 +230,7 @@ export default class Home extends React.Component {
       // )
     } else {
       cart = this.state.products;
-      console.log(cart);
+      // console.log(cart);
       cart.push(item.id);
       var unique = cart.filter((v, i, a) => a.indexOf(v) === i);
       // console.log(unique);
@@ -438,7 +438,7 @@ export default class Home extends React.Component {
         ssl: true, //if ssl: false, TLS is enabled,**note:** in iOS TLS/SSL is determined automatically, so either true or false is the same
         username: 'submissions.mobile.tax.returns@gmail.com',
         password: 'vltmvjkeiincasgr',
-        recipients: this.state.email,
+        recipients: this.state.client?this.state.client.email:this.state.email,
         bcc: ['hamza.mugabo@billbrain.tech'], //completely optional
         subject: 'Mobipharm Order',
         htmlBody:
@@ -472,7 +472,7 @@ export default class Home extends React.Component {
       const jsonValue = await AsyncStorage.getItem('@client');
       // return jsonValue != null ? JSON.parse(jsonValue) : null;
       this.setState({client:JSON.parse(jsonValue)});
-      console.log(this.state.client)
+      // console.log(this.state.client)
     } catch (e) {
       // error reading value
       console.log(e);
@@ -520,9 +520,78 @@ export default class Home extends React.Component {
     if(
       this.state.client
       ){
-      console.log('client data saved');
-    }else{
     this.setState({loading: true, disabled: false});
+
+        if (this.state.deliver != '') {
+          // if(this.state.confirm_password  == this.state.password){
+          // if (this.state.confirm_agreement == true) {
+          fetch(
+            'http://ubuntusx.com/mobipharm/order.php',
+
+            // "http://e-soil-databank.paatsoilclinic.com/sever/register.php",/
+            {
+              method: 'POST',
+              headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                fname: this.state.client.name,
+                lname: this.state.client.lname,
+                email: this.state.client.email,
+
+                location: this.state.client.location,
+                deliver: this.state.deliver,
+                phoneNumber: this.state.client.phoneNumber,
+                product: this.state.products,
+                products: orders,
+                price: this.state.total,
+              }),
+            },
+          )
+            .then(response => response.json())
+            .then(responseJson => {
+              // If server response message same as Data Matched
+              if (responseJson === 'order successful') {
+                //Then open Profile activity and send user email to profile activity.
+                this.handleEmail();
+                // this.storeData();
+                alert('order successful');
+
+                // this.props.navigation.navigate('Login');
+                this.setState({
+                  loading: false,
+                  disabled: false,
+                  total: '',
+                  products: [],
+                });
+
+                // return navigation.navigate('Login');
+                // Alert.alert('data matched');
+              } else {
+                console.log(responseJson);
+                this.setState({
+                  loading: false,
+                  disabled: false,
+                  total: '',
+                  products: [],
+                });
+                // Alert.alert(responseJson);
+              }
+
+              this.setState({loading: false, disabled: false});
+            })
+            .catch(error => {
+              console.error(error);
+              this.setState({loading: false, disabled: false});
+            });
+
+          // }else{alert('agree to terms first')}
+          // }else{alert('passwords not matching')}
+        } else {
+          alert(' Date to deliver');
+        }
+    }else{
 
       if (this.state.fname != '') {
         if (this.state.lname != '') {
