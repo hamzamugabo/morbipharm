@@ -49,6 +49,7 @@ export default class Home extends React.Component {
       data: [],
       data2: [],
       data3: [],
+      order:'',
       is_admin: false,
       currentUser: null,
       confirm_agreement: false,
@@ -196,26 +197,14 @@ export default class Home extends React.Component {
       // saving error
       alert(e);
     }
-    // navigation.navigate('MakePayments');
-    // setScaleAnimationDialogRepayLoan(false);
-
-    // console.log(data);
   };
   buy = item => {
     if (cart.length == 0 && cart_price.length == 0) {
       cart.push(item.id);
       var unique = cart.filter((v, i, a) => a.indexOf(v) === i);
       // console.log(unique);
-      this.setState({products: unique});
-      // if (items.length == 0) {
-      //   items = this.state.products;
-
-      //   this.setState({added_products: items});
-      // }
+      this.setState({products: unique});  
       cart_price.push(parseInt(item.price));
-      var unique_ = cart_price.filter((v, i, a) => a.indexOf(v) === i);
-      // console.log(unique_);
-      // this.setState({prices: unique_});
       let prod;
       prod = this.state.products.map(ids =>
         this.state.data
@@ -238,16 +227,8 @@ export default class Home extends React.Component {
       var unique = cart.filter((v, i, a) => a.indexOf(v) === i);
       // console.log(unique);
       this.setState({products: unique});
-      // if (items.length == 0) {
-      //   items = this.state.products;
-
-      //   this.setState({added_products: items});
-      // }
+      
       cart_price.push(parseInt(item.price));
-      var unique_ = cart_price.filter((v, i, a) => a.indexOf(v) === i);
-      // console.log(unique_);
-      // this.setState({prices: unique_});
-
       let prod;
       prod = this.state.products.map(ids =>
         this.state.data
@@ -258,9 +239,6 @@ export default class Home extends React.Component {
       this.setState({prices: merged});
       this.setState({total: merged.reduce((a, b) => a + b, 0)});
 
-      // console.log(
-      //   merged.reduce((a, b) => a + b)
-      // )
     }
   };
   renderSeparator = () => {
@@ -427,6 +405,9 @@ export default class Home extends React.Component {
     });
     alert('order confirmed');
   };
+  getOccurrence(array, value) {
+    return array.filter((v) => (v === value)).length;
+}
   handleEmail = () => {
     let drug=this.state.products.map(ids =>
       this.state.data
@@ -435,25 +416,24 @@ export default class Home extends React.Component {
     );
 
     var merged = [].concat.apply([], drug);
-
+    
+    var unique = merged.filter((v, i, a) => a.indexOf(v) === i);
+ var orders=  unique.map((prod) => (
+    // console.log(prod);
+   prod+' '+this.getOccurrence(merged, prod)
+   ));
+  
     this.setState({ loading: true, disabled: true }, () => {
     RNSmtpMailer.sendMail({
       mailhost: "smtp.gmail.com",
       port: "465",
       ssl: true, //if ssl: false, TLS is enabled,**note:** in iOS TLS/SSL is determined automatically, so either true or false is the same
-      username: "testtechpro2@gmail.com",
-      password: "Test1.2,3",
+      username: "submissions.mobile.tax.returns@gmail.com",
+      password: "vltmvjkeiincasgr",
       recipients:this.state.email,
       bcc: ["hamza.mugabo@billbrain.tech"], //completely optional
       subject: "Mobipharm Order",
-      htmlBody: '<h1>Dear '+''+ this.state.fname +''+''+ this.state.lname +'</h1><p>Your order for '+''+merged+' has been confirmed at UGX '+''+this.state.total+'</p>',
-      // attachmentPaths: [
-       
-      // ],
-      // attachmentNames: [
-       
-      // ], //only used in android, these are renames of original files. in ios filenames will be same as specified in path. In ios-only application, leave it empty: attachmentNames:[]
-      // attachmentTypes: ["img", "txt", "csv", "pdf", "zip", "img"] //needed for android, in ios-only application, leave it empty: attachmentTypes:[]. Generally every img(either jpg, png, jpeg or whatever) file should have "img", and every other file should have its corresponding type.
+      htmlBody: '<h1>Dear '+''+ this.state.fname +' '+' '+ this.state.lname +'</h1><p>Your order for '+''+orders+' has been confirmed at UGX '+''+this.state.total+'</p>',
     })
       .then(success=> {
         // If server response message same as Data Matched
@@ -474,6 +454,7 @@ export default class Home extends React.Component {
       visible: false,
       checkout: false,
     });
+
     let drug=this.state.products.map(ids =>
       this.state.data
         .filter(item => item.id == ids)
@@ -481,7 +462,13 @@ export default class Home extends React.Component {
     );
 
     var merged = [].concat.apply([], drug);
-// console.log(merged);
+    
+    var unique = merged.filter((v, i, a) => a.indexOf(v) === i);
+ var orders=  unique.map((prod) => (
+    // console.log(prod);
+   prod+' '+this.getOccurrence(merged, prod)
+   ));
+
     this.setState({loading: true, disabled: false});
 
     if (this.state.fname != '') {
@@ -511,7 +498,7 @@ export default class Home extends React.Component {
                       deliver: this.state.deliver,
                       phoneNumber: this.state.phoneNumber,
                       product: this.state.products,
-                      products: merged,
+                      products: orders,
                       price: this.state.total,
                     }),
                   },
@@ -536,6 +523,12 @@ export default class Home extends React.Component {
                       // Alert.alert('data matched');
                     } else {
                       console.log(responseJson);
+                      this.setState({
+                        loading: false,
+                        disabled: false,
+                        total: '',
+                        products: [],
+                      });
                       // Alert.alert(responseJson);
                     }
 
