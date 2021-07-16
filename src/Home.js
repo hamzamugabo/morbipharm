@@ -444,10 +444,10 @@ export default class Home extends React.Component {
         htmlBody:
           '<h1>Dear ' +
           '' +
-          this.state.fname +
+          this.state.client?this.state.client.name:this.state.fname +
           ' ' +
           ' ' +
-          this.state.lname +
+          this.state.client?this.state.client.lname:this.state.lname +
           '</h1><p>Your order for ' +
           '' +
           orders +
