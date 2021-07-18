@@ -256,7 +256,7 @@ export default class ViewOrder extends React.Component {
                 <Text style={styles.value}>{item.client_email}</Text>
               </View>
             </View>
-            <View style={{flexDirection:'row',justifyContent:'flex-end'}}>
+            <View style={{flexDirection:'row',justifyContent:'center'}}>
             <TouchableOpacity
             style={{marginRight:30}}
             onPress={this.call.bind(this,item.client_phone)}

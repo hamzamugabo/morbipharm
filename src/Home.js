@@ -1024,13 +1024,13 @@ export default class Home extends React.Component {
           <DialogContent>
             <View
               style={{
-                marginLeft: 70,
+                // marginLeft: 70,
                 marginTop: 10,
-                marginRight: 70,
+                // marginRight: 70,
                 justifyContent: 'center',
                 alignItems: 'center',
                 height: 400,
-                maxWidth: '100%',
+                maxWidth: '120%',
               }}>
               <ScrollView>
                 {
@@ -1071,7 +1071,7 @@ export default class Home extends React.Component {
                   </View>:
 
 <View
-                  style={{marginBottom: 30, marginTop: 50, maxWidth: '100%'}}>
+                  style={{marginBottom: 30, marginTop: 50, maxWidth: '120%'}}>
                   <View style={styles.inputContainer}>
                     <TextInput
                       underlineColorAndroid="transparent"
@@ -1147,7 +1147,7 @@ export default class Home extends React.Component {
                           alignSelf: 'stretch',
                           fontSize: 16,
                           marginBottom: 9,
-                          backgroundColor:'white'
+                          // backgroundColor:'white'
                         },
                         placeholderText:{
                           color:'black'
@@ -1194,13 +1194,13 @@ export default class Home extends React.Component {
             </View>
             <View
               style={{
-                marginLeft: 70,
+                // marginLeft: 70,
                 marginTop: 10,
-                marginRight: 70,
+                // marginRight: 70,
                 justifyContent: 'center',
                 alignItems: 'center',
                 height: 400,
-                maxWidth: '100%',
+                maxWidth: '120%',
               }}>
                 
               <ScrollView>
@@ -1208,7 +1208,7 @@ export default class Home extends React.Component {
 {
   this.state.client?
 <View
-                  style={{marginBottom: 30, marginTop: 50, maxWidth: '100%'}}>
+                  style={{marginBottom: 30, marginTop: 50, maxWidth: '120%'}}>
                   <View style={styles.inputContainer}>
                     <TextInput
                       underlineColorAndroid="transparent"
@@ -1266,7 +1266,7 @@ export default class Home extends React.Component {
                 
   :
   <View
-                  style={{marginBottom: 30, marginTop: 50, maxWidth: '100%'}}>
+                  style={{marginBottom: 30, marginTop: 50, maxWidth: '120%'}}>
                   <View style={styles.inputContainer}>
                     <TextInput
                       underlineColorAndroid="transparent"
@@ -1379,7 +1379,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'lightgrey',
     borderRadius: 30,
     borderBottomWidth: 1,
-    width: 150,
+    width: 200,
     height: 45,
     marginBottom: 20,
     flexDirection: 'row',
