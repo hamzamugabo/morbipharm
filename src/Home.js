@@ -433,29 +433,42 @@ export default class Home extends React.Component {
     );
 
     this.setState({loading: true, disabled: true}, () => {
+      if(this.state.client){
+
+        RNSmtpMailer.sendMail({
+          mailhost: 'smtp.gmail.com',
+          port: '465',
+          ssl: true, //if ssl: false, TLS is enabled,**note:** in iOS TLS/SSL is determined automatically, so either true or false is the same
+          username: 'submissions.mobile.tax.returns@gmail.com',
+          password: 'vltmvjkeiincasgr',
+          recipients: this.state.client?this.state.client.email:this.state.email,
+          bcc: ['hamza.mugabo@billbrain.tech'], //completely optional
+          subject: 'Mobipharm Order',
+          htmlBody:
+            '<h4>Dear ' +'' +this.state.client.name +' ' +' ' +this.state.client.lname+'</h4><p>Your order for ' +'' +orders +' has been confirmed at UGX ' +'' +this.state.total +'</p>',
+        })
+          .then(success => {
+            // If server response message same as Data Matched
+            if (success) {
+              this.setState({loading: false, disabled: false});
+            } else {
+              this.setState({loading: false, disabled: false});
+            }
+          })
+          .catch(err => console.log(err));
+      }else{
+        
       RNSmtpMailer.sendMail({
         mailhost: 'smtp.gmail.com',
         port: '465',
         ssl: true, //if ssl: false, TLS is enabled,**note:** in iOS TLS/SSL is determined automatically, so either true or false is the same
         username: 'submissions.mobile.tax.returns@gmail.com',
         password: 'vltmvjkeiincasgr',
-        recipients: this.state.client?this.state.client.email:this.state.email,
+        recipients: this.state.email,
         bcc: ['hamza.mugabo@billbrain.tech'], //completely optional
         subject: 'Mobipharm Order',
         htmlBody:
-          '<h1>Dear ' +
-          '' +
-          this.state.client?this.state.client.name:this.state.fname +
-          ' ' +
-          ' ' +
-          this.state.client?this.state.client.lname:this.state.lname +
-          '</h1><p>Your order for ' +
-          '' +
-          orders +
-          ' has been confirmed at UGX ' +
-          '' +
-          this.state.total +
-          '</p>',
+          '<h4>Dear ' +'' +this.state.fname +' ' +' ' +this.state.lname+'</h4><p>Your order for ' +'' +orders +' has been confirmed at UGX ' +'' +this.state.total +'</p>',
       })
         .then(success => {
           // If server response message same as Data Matched
@@ -466,6 +479,7 @@ export default class Home extends React.Component {
           }
         })
         .catch(err => console.log(err));
+      }
     });
   };
   client_ = async () => {
@@ -591,6 +605,8 @@ export default class Home extends React.Component {
           // }else{alert('passwords not matching')}
         } else {
           alert(' Date to deliver');
+    this.setState({loading: false, disabled: false});
+
         }
     }else{
 
@@ -667,21 +683,33 @@ export default class Home extends React.Component {
                   // }else{alert('passwords not matching')}
                 } else {
                   alert(' Date to deliver');
+    this.setState({loading: false, disabled: false});
+
                 }
               } else {
                 alert('Enter Location');
+    this.setState({loading: false, disabled: false});
+
               }
             } else {
               alert('Enter phone number');
+    this.setState({loading: false, disabled: false});
+
             }
           } else {
             alert('Enter email');
+    this.setState({loading: false, disabled: false});
+
           }
         } else {
           alert('Enter Last Name');
+    this.setState({loading: false, disabled: false});
+
         }
       } else {
         alert('Enter First Name');
+    this.setState({loading: false, disabled: false});
+
       }
     }
     
@@ -784,7 +812,7 @@ export default class Home extends React.Component {
             </View>
           </TouchableOpacity>
         </View>
-        <View style={[styles.buttonsContainer, {margin: 15}]}>
+        <View style={[styles.buttonsContainer, {margin: 15,marginTop:0}]}>
           <View style={{borderBottomColor: 'orange', padding: 10}}>
             <TouchableHighlight style={[styles.buttonContainer, {height: 30}]}>
               <Text>SORT BY</Text>
