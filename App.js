@@ -1,4 +1,5 @@
-import React from 'react';
+import React,  { useState, useEffect }from 'react';
+import { Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 // import SplashScreen from 'react-native-splash-screen';
@@ -13,7 +14,6 @@ import SignOut from './src/auth/SignOut';
 import Main from './src/Main';
 import Cart from './src/Cart';
 import ViewOrder from './src/ViewOrder';
-import ForgotPassword from './src/auth/ForgotPassword';
 
 
 
@@ -35,9 +35,10 @@ function MyStack() {
     <Stack.Screen name="SignOut" component={SignOut} /> 
     <Stack.Screen name="Main" component={Main} /> 
     <Stack.Screen name="Cart" component={Cart} /> 
-    <Stack.Screen name="ViewOrder" component={ViewOrder} />
+    <Stack.Screen name="ViewOrder" component={ViewOrder} /> 
+
+      {/* <Stack.Screen name="SignOut" component={SignOut} />  */}
       <Stack.Screen name="Register" component={Register} />
-      <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
     </Stack.Navigator>
   );
 }

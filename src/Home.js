@@ -180,7 +180,7 @@ export default class Home extends React.Component {
       .finally(() => this.setState({loading: false}));
 
     this.getData_();
-    this.client_();
+    
 
   //   if (typeof this.state.client != "undefined") {
       // console.log(this.state.client);
@@ -483,6 +483,7 @@ export default class Home extends React.Component {
     });
   };
   client_ = async () => {
+    this.setState({profile:true})
     try {
       const jsonValue = await AsyncStorage.getItem('@client');
       // return jsonValue != null ? JSON.parse(jsonValue) : null;
@@ -764,7 +765,7 @@ export default class Home extends React.Component {
             {/* <Text>Settings</Text> */}
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => this.setState({profile:true})}>
+            onPress={() => this.client_()}>
             <Image
               source={require('./images/user.png')}
               style={{width: 30, height: 30}}
@@ -1201,9 +1202,11 @@ export default class Home extends React.Component {
                 height: 400,
                 maxWidth: '100%',
               }}>
+                
               <ScrollView>
                 
-
+{
+  this.state.client?
 <View
                   style={{marginBottom: 30, marginTop: 50, maxWidth: '100%'}}>
                   <View style={styles.inputContainer}>
@@ -1261,6 +1264,64 @@ export default class Home extends React.Component {
                   </View>
                 
                 
+  :
+  <View
+                  style={{marginBottom: 30, marginTop: 50, maxWidth: '100%'}}>
+                  <View style={styles.inputContainer}>
+                    <TextInput
+                      underlineColorAndroid="transparent"
+                      placeholder="first Name"
+                      style={styles.inputs}
+                      autoCapitalize="none"
+                      onChangeText={fname => this.setState({fname})}
+                      value={this.state.fname}
+                    />
+                  </View>
+
+                  <View style={styles.inputContainer}>
+                    <TextInput
+                      underlineColorAndroid="transparent"
+                      placeholder="Last Name"
+                      style={styles.inputs}
+                      autoCapitalize="none"
+                      onChangeText={lname => this.setState({lname})}
+                      value={this.state.lname}
+                    />
+                  </View>
+
+                  <View style={styles.inputContainer}>
+                    <TextInput
+                      underlineColorAndroid="transparent"
+                      placeholder="Email"
+                      autoCapitalize="none"
+                      keyboardType="email-address"
+                      style={styles.inputs}
+                      onChangeText={text => this.setState({email: text})}
+                    />
+                  </View>
+                  <View style={styles.inputContainer}>
+                    <TextInput
+                      underlineColorAndroid="transparent"
+                      placeholder="PhoneNumber"
+                      autoCapitalize="none"
+                      keyboardType="number-pad"
+                      style={styles.inputs}
+                      onChangeText={text => this.setState({phoneNumber: text})}
+                    />
+                  </View>
+                  <View style={styles.inputContainer}>
+                    <TextInput
+                      underlineColorAndroid="transparent"
+                      placeholder="Location"
+                      autoCapitalize="none"
+                      style={styles.inputs}
+                      onChangeText={text => this.setState({location: text})}
+                    />
+                  </View>
+                  
+                  </View>
+}
+
 
                 
               </ScrollView>
