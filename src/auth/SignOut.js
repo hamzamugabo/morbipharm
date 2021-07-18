@@ -1,14 +1,10 @@
-import React, {useEffect} from "react";
+import React from "react";
 // import AsyncStorage from '@react-native-community/async-storage';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {
-    SafeAreaView,
-    StyleSheet,
     View,
     Text,
-    Button,
-    ActivityIndicator,
   } from 'react-native';
 
 export default class SignOut extends React.Component {
@@ -23,6 +19,7 @@ export default class SignOut extends React.Component {
          getData = async () => {
           try {
               await AsyncStorage.removeItem('@storage_Key');
+              this.props.navigation.goBack();
               return true;
           }
           catch(exception) {

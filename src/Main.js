@@ -1,7 +1,4 @@
-// Example to Pick and Upload files in React Native
-// https://aboutreact.com/file-uploading-in-react-native/
 
-// Import React
 import React, { useState } from 'react';
 // Import core components
 import {

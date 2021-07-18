@@ -12,11 +12,6 @@ import {
   Image,
   TouchableHighlight,
 } from 'react-native';
-import firebase, * as firbase from "firebase";
-
-// import auth from '@react-native-firebase/auth';
-// import database from '@react-native-firebase/database';
-import Colors from '../pages/colors';
 
 export default class ForgotPassword extends Component {
   static navigationOptions = ({navigation}) => {
@@ -38,59 +33,9 @@ export default class ForgotPassword extends Component {
       disabled: false,
     };
   }
-
-  //   componentDidMount() {
-  //     database().ref('users/' + userId).on('value', (snapshot) => {
-  //       const highscore = snapshot.val().highscore;
-  //       console.log("New high score: " + highscore);
-  //     });
-
-  //   var user = this.state.email;
-
-  //   var newUser =user;
-  //   var email_edit1 = newUser.replace('@', '-');
-
-  //   var email_edit2 = email_edit1.replace('.', '-');
-  //  database().ref('users/'+ email_edit2).on('value', (snapshot) => {
-  //     const highscore = snapshot.val().highscore;
-  //     console.log("New high score: " + highscore);
-  //   });
-  //   }
-
-  // forgotPassword = (this.state.email) => {
-  //   auth().sendPasswordResetEmail(this.state.email)
-  //     .then(function (user) {
-  //       alert('Please check your email...')
-  //     }).catch(function (e) {
-  //       console.log(e)
-  //     })
-  // }
   saveData = () => {
     if (this.state.email != '') {
-      var user = this.state.email;
-
-      var newUser = user;
-      var email_edit1 = newUser.replace('@', '-');
-
-      var email_edit2 = newUser.replace(/[^0-9a-z]/gi, '-');
-
-      this.setState({loading: true, disabled: true}, () => {
-        firebase.database()
-          .ref('users/' + email_edit2)
-          .on('value', (snapshot) => {
-            const email = snapshot.val().email;
-            firebase.auth()
-              .sendPasswordResetEmail(email)
-              .then((user) => {
-                alert('Please check your email...');
-                this.setState({loading: false, disabled: false});
-              })
-              .catch((e) => {
-                alert(e);
-                this.setState({loading: false, disabled: false});
-              });
-          });
-      });
+      console.log(this.state.email);
     } else {
       alert('Enter Correct Email');
     }
@@ -108,20 +53,13 @@ export default class ForgotPassword extends Component {
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <View style={styles.container}>
           <View style={styles.reg}>
-            <Text style={{fontSize: 20, color: Colors.blue}}>
+            <Text style={{fontSize: 20, color:'blue'}}>
               Change Password
             </Text>
           </View>
 
           <View>
-            {/* <TextInput
-              underlineColorAndroid="transparent"
-              placeholder="email"
-              style={styles.TextInputStyleClass}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              onChangeText={(text) => this.setState({email: text})}
-            /> */}
+            
              <View style={styles.inputContainer}>
               <TextInput
               style={styles.inputs}
@@ -137,21 +75,7 @@ export default class ForgotPassword extends Component {
               onChangeText={(email) => this.setState({email})}
             />
             </View>
-            {/* <TextInput
-          underlineColorAndroid="transparent"
-          placeholder="New password"
-          style={styles.TextInputStyleClass}
-          onChangeText={password => this.setState({ password })}
-          secureTextEntry={true}
-        /> */}
-
-            {/* <TouchableOpacity
-              disabled={this.state.disabled}
-              activeOpacity={0.8}
-              style={styles.Btn}
-              onPress={this.saveData}>
-              <Text style={styles.btnText}>Change password</Text>
-            </TouchableOpacity> */}
+           
             <TouchableHighlight
               style={[styles.buttonContainer, styles.loginButton]}
               onPress={this.saveData}>
@@ -241,11 +165,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   signupText: {
-    color: Colors.blue,
+    color: 'blue',
     fontSize: 16,
   },
   signupButton: {
-    color: Colors.blue,
+    color: 'blue',
     fontSize: 16,
     fontWeight: '500',
   },

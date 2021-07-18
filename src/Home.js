@@ -58,6 +58,7 @@ export default class Home extends React.Component {
       loading: false,
       disabled: false,
       visible: false,
+      profile: false,
       photos: [],
       photos2: [],
       setData3: [],
@@ -685,6 +686,24 @@ export default class Home extends React.Component {
     }
     
   };
+  update= async () => {
+    let obj = {
+      name: this.state.fname ==''?this.state.client.name:this.state.fname,
+      lname: this.state.lname==''?this.state.client.lname:this.state.lname,
+      email: this.state.email==''?this.state.client.email:this.state.email,
+      location: this.state.location ==''?this.state.client.location:this.state.location,
+      phoneNumber: this.state.phoneNumber ==''?this.state.client.phoneNumber:this.state.phoneNumber,
+    };
+    try {
+      const jsonValue = JSON.stringify(obj);
+      await AsyncStorage.setItem('@client', jsonValue);
+      // alert(e);
+      this.setState({profile:false})
+    } catch (e) {
+      // saving error
+      alert(e);
+    }
+  };
   render() {
     const options = [
       {
@@ -712,6 +731,14 @@ export default class Home extends React.Component {
             onPress={() => this.props.navigation.navigate('Settings')}>
             <Image
               source={require('./images/settings.png')}
+              style={{width: 30, height: 30}}
+            />
+            {/* <Text>Settings</Text> */}
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => this.setState({profile:true})}>
+            <Image
+              source={require('./images/user.png')}
               style={{width: 30, height: 30}}
             />
             {/* <Text>Settings</Text> */}
@@ -777,7 +804,7 @@ export default class Home extends React.Component {
           <View style={{borderBottomColor: 'orange', padding: 10}}>
             <Picker
               selectedValue={this.state.category}
-              style={{height: 50, width: 250}}
+              style={{height: 50, width: 200}}
               onValueChange={(itemValue, itemIndex) => {
                 this.setState({category: itemValue});
                 this.searchFilterFunction(itemValue);
@@ -1112,6 +1139,108 @@ export default class Home extends React.Component {
                 onPress={this.confirm}
                 style={[styles.smaillbuttons, {width: 100, height: 30}]}>
                 <Text style={{color: '#fff'}}>Confirm Order</Text>
+              </TouchableOpacity>
+            </View>
+          </DialogContent>
+        </Dialog>
+
+
+
+        
+        <Dialog
+          visible={this.state.profile}
+          // height={600}
+          footer={
+            <DialogFooter>
+              <DialogButton
+                text="CANCEL"
+                onPress={() => this.setState({profile: false})}
+              />
+              <DialogButton text="OK" onPress={() => this.update()} />
+            </DialogFooter>
+          }>
+          <DialogContent>
+            <View style={{alignItems:'center'}}>
+            <Text>Set profile</Text>
+            </View>
+            <View
+              style={{
+                marginLeft: 70,
+                marginTop: 10,
+                marginRight: 70,
+                justifyContent: 'center',
+                alignItems: 'center',
+                height: 400,
+                maxWidth: '100%',
+              }}>
+              <ScrollView>
+                
+
+<View
+                  style={{marginBottom: 30, marginTop: 50, maxWidth: '100%'}}>
+                  <View style={styles.inputContainer}>
+                    <TextInput
+                      underlineColorAndroid="transparent"
+                      placeholder={this.state.client.name}
+                      style={styles.inputs}
+                      autoCapitalize="none"
+                      onChangeText={fname => this.setState({fname})}
+                      value={this.state.fname}
+                    />
+                  </View>
+
+                  <View style={styles.inputContainer}>
+                    <TextInput
+                      underlineColorAndroid="transparent"
+                      placeholder={this.state.client.lname}
+                      style={styles.inputs}
+                      autoCapitalize="none"
+                      onChangeText={lname => this.setState({lname})}
+                      value={this.state.lname}
+                    />
+                  </View>
+
+                  <View style={styles.inputContainer}>
+                    <TextInput
+                      underlineColorAndroid="transparent"
+                      placeholder={this.state.client.email}
+                      autoCapitalize="none"
+                      keyboardType="email-address"
+                      style={styles.inputs}
+                      onChangeText={text => this.setState({email: text})}
+                    />
+                  </View>
+                  <View style={styles.inputContainer}>
+                    <TextInput
+                      underlineColorAndroid="transparent"
+                      placeholder={this.state.client.phoneNumber}
+                      autoCapitalize="none"
+                      keyboardType="number-pad"
+                      style={styles.inputs}
+                      onChangeText={text => this.setState({phoneNumber: text})}
+                    />
+                  </View>
+                  <View style={styles.inputContainer}>
+                    <TextInput
+                      underlineColorAndroid="transparent"
+                      placeholder={this.state.client.location}
+                      autoCapitalize="none"
+                      style={styles.inputs}
+                      onChangeText={text => this.setState({location: text})}
+                    />
+                  </View>
+                  
+                  </View>
+                
+                
+
+                
+              </ScrollView>
+              {/* <Text>{this.state.total}</Text> */}
+              <TouchableOpacity
+                onPress={this.update}
+                style={[styles.smaillbuttons, {width: 100, height: 30}]}>
+                <Text style={{color: '#fff'}}>Update</Text>
               </TouchableOpacity>
             </View>
           </DialogContent>
