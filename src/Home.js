@@ -893,15 +893,15 @@ export default class Home extends React.Component {
           <DialogContent>
             <View
               style={{
-                marginLeft: 60,
+                marginLeft: 10,
                 marginTop: 10,
-                marginRight: 60,
+                marginRight: 10,
                 justifyContent: 'center',
                 alignItems: 'center',
                 height: 500,
                 // maxWidth: '120%',
               }}>
-              <ScrollView style={{backgroundColor: '#FFF8DC'}}>
+              <ScrollView style={{backgroundColor: '#F9F6EE'}}>
                 {this.state.products
                   .filter((v, i, a) => a.indexOf(v) === i)
                   .map(product_id =>
@@ -910,7 +910,7 @@ export default class Home extends React.Component {
                       .map((product, index) => (
                         <View
                           key={index}
-                          style={{marginBottom: 30, maxWidth: '100%'}}>
+                          style={{marginBottom: 30, maxWidth: '120%'}}>
                           <View style={styles.buttonsContainer}>
                             <View style={{marginRight: 10}}>
                               <Image
